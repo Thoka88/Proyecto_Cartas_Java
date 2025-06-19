@@ -8,7 +8,7 @@ package com.uisil.proyecto_juego_cartas;
  *
  * @author Thoka
  */
-abstract class Carta {
+public abstract class Carta {
    private int id;
    private  boolean bocaArriba ;
    private boolean colocada;
@@ -37,6 +37,18 @@ abstract class Carta {
 
     public boolean isColocada() {
         return colocada;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setBocaArriba(boolean bocaArriba) {
+        this.bocaArriba = bocaArriba;
+    }
+
+    public void setColocada(boolean colocada) {
+        this.colocada = colocada;
     }
    
    
