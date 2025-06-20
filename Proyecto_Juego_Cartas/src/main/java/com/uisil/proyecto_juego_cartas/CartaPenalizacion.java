@@ -9,43 +9,46 @@ package com.uisil.proyecto_juego_cartas;
  * @author Yordi
  */
 public class CartaPenalizacion {
-    //facil
-    public void menosCincoSeg(){
-    
-      //metodo que resta 5seg a el timer  
-        
-    }
-    //facil
-    public void menosUnPunto(){
-    
-        //resta 1 punto a el puntaje
-    
-    }
-    //medio
-    public void menosDiezSeg(){
-    
-        //metodo que resta 10seg a el timer 
-    
-    }
-    
-    //medio
-    public void verUnaCarta(){
-    
-        //Solo se puede mostrar 1 carta en los siguientes 2 turnos
-    
+// Referencias necesarias (deberías conectarlas con el sistema principal del juego)
+    private Juego juego;
+
+    public CartaPenalizacion(Juego juego) {
+        this.juego = juego;
     }
 
-    //modo dificil
-    public void menosTreintaSeg(){
-    
-        //metodo que resta 30seg a el timer
-    
+    // Fácil: Resta 5 segundos al timer
+    public void menosCincoSeg() {
+        juego.restarTiempo(5);
+        System.out.println("Se restaron 5 segundos al temporizador.");
     }
-    //modo dificil
-    public void mezclarCartas(){
-    
-        //se mezclan las cartas no emparejadas
+
+    // Fácil: Resta 1 punto al puntaje
+    public void menosUnPunto() {
+        juego.restarPuntos(1);
+        System.out.println("Se restó 1 punto al jugador.");
     }
-    
-    
+
+    // Medio: Resta 10 segundos al timer
+    public void menosDiezSeg() {
+        juego.restarTiempo(10);
+        System.out.println("Se restaron 10 segundos al temporizador.");
+    }
+
+    // Medio: Solo se puede ver una carta por turno durante 2 turnos
+    public void verUnaCarta() {
+        juego.activarRestriccionUnaCarta(2);
+        System.out.println("Solo se puede mostrar una carta por turno durante 2 turnos.");
+    }
+
+    // Difícil: Resta 30 segundos al timer
+    public void menosTreintaSeg() {
+        juego.restarTiempo(30);
+        System.out.println("Se restaron 30 segundos al temporizador.");
+    }
+
+    // Difícil: Mezclar cartas no emparejadas
+    public void mezclarCartas() {
+        juego.mezclarCartasNoEmparejadas();
+        System.out.println("Las cartas no emparejadas han sido mezcladas.");
+    }
 }
