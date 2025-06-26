@@ -9,7 +9,14 @@ package com.uisil.proyecto_juego_cartas.model;
  *
  * @author Yordi
  */
-public class CartaBonus {
+public class CartaBonus extends Carta{
+    private int tiempoRestante;
+    
+
+    public CartaBonus(int tiempoRestante, int id) {
+        super(id);
+        this.tiempoRestante = tiempoRestante;
+    }
     //general
     public void masCincoSeg(){
         tiempoRestante += 5; // Asumiendo que tienes una variable tiempoRestante en segundos
