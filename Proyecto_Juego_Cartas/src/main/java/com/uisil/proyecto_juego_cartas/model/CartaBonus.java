@@ -4,6 +4,7 @@
  */
 package com.uisil.proyecto_juego_cartas.model;
 
+
 /**
  *
  * @author Yordi

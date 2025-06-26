@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.uisil.proyecto_juego_cartas.model;
+import com.uisil.proyecto_juego_cartas.logic.Juego;
 
 /**
  *
