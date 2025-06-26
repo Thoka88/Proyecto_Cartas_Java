@@ -9,7 +9,7 @@ import com.uisil.proyecto_juego_cartas.logic.Juego;
  *
  * @author Yordi
  */
-public class CartaPenalizacion {
+public class CartaPenalizacion extends Carta{
 // Referencias necesarias (deberías conectarlas con el sistema principal del juego)
     private Juego juego;
 
