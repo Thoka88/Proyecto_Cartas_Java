@@ -6,8 +6,9 @@ package com.uisil.proyecto_juego_cartas.logic;
 
 /**
  *
- * @author Thoka
+ * @author Yordi
  */
 public class Juego {
     
 }
+
