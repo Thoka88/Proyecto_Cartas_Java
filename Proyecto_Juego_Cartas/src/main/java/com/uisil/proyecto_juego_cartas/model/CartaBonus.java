@@ -7,49 +7,64 @@ package com.uisil.proyecto_juego_cartas.model;
 
 /**
  *
- * @author Yordi
- */
-public class CartaPenalizacion extends Carta{
-// Referencias necesarias (deberías conectarlas con el sistema principal del juego)
-    private Juego juego;
-
-    public CartaPenalizacion(Juego juego) {
-        this.juego = juego;
+ 
+@author Yordi*/
+public class CartaBonus extends Carta{
+    //general
+    public void masCincoSeg(){
+        tiempoRestante += 5; // Asumiendo que tienes una variable tiempoRestante en segundos
+        System.out.println("Se agregaron 5 segundos. Tiempo total: " + tiempoRestante);
+    }
+    //general
+    public void verCarta(Carta carta){
+        carta.voltear(); // Supone que la clase Carta tiene un método para voltearse
+        System.out.println("Carta mostrada: " + carta.getValor());
+}
+    //general
+    public void puntosDobles(Carta carta){
+        carta.setDoblePuntos(true); // Supone que la clase Carta tiene una bandera para eso
+        System.out.println("¡Esta carta ahora vale doble al emparejarse!");
+    } 
+    //medio
+    public void cartaComodin(Carta carta){
+        carta.setEsComodin(true); // Supone que existe ese atributo en la carta
+        System.out.println("Esta carta es un comodín.");
     }
 
-    // Fácil: Resta 5 segundos al timer
-    public void menosCincoSeg() {
-        juego.restarTiempo(5);
-        System.out.println("Se restaron 5 segundos al temporizador.");
+    //medio
+    public void rastrearPareja(int fila, Carta carta){
+        for (int col = 0; col < tablero[fila].length; col++) {
+            if (tablero[fila][col].getValor().equals(carta.getValor()) && !tablero[fila][col].equals(carta)) {
+                System.out.println("La pareja está en la misma fila.");
+                return;
+            }
+        }
+        System.out.println("La pareja NO está en la misma fila.");
     }
 
-    // Fácil: Resta 1 punto al puntaje
-    public void menosUnPunto() {
-        juego.restarPuntos(1);
-        System.out.println("Se restó 1 punto al jugador.");
+    //modo dificil
+    public void mostrarPareja(){
+        List<Carta> cartasVisibles = obtenerCartasNoEmparejadas();
+        if (cartasVisibles.size() < 2) return;
+
+        Collections.shuffle(cartasVisibles);
+        Carta c1 = cartasVisibles.get(0);
+
+        for (Carta c2 : cartasVisibles) {
+            if (!c1.equals(c2) && c1.getValor().equals(c2.getValor())) {
+                c1.voltear();
+                c2.voltear();
+                System.out.println("Pareja descubierta: " + c1.getValor());
+                return;
+            }
+        }
+    }
+    //modo dificil
+    public void mostrarFila(int fila){
+        for (int col = 0; col < tablero[fila].length; col++) {
+            tablero[fila][col].voltear();
+        }
+        System.out.println("Fila " + fila + " revelada.");
     }
 
-    // Medio: Resta 10 segundos al timer
-    public void menosDiezSeg() {
-        juego.restarTiempo(10);
-        System.out.println("Se restaron 10 segundos al temporizador.");
-    }
-
-    // Medio: Solo se puede ver una carta por turno durante 2 turnos
-    public void verUnaCarta() {
-        juego.activarRestriccionUnaCarta(2);
-        System.out.println("Solo se puede mostrar una carta por turno durante 2 turnos.");
-    }
-
-    // Difícil: Resta 30 segundos al timer
-    public void menosTreintaSeg() {
-        juego.restarTiempo(30);
-        System.out.println("Se restaron 30 segundos al temporizador.");
-    }
-
-    // Difícil: Mezclar cartas no emparejadas
-    public void mezclarCartas() {
-        juego.mezclarCartasNoEmparejadas();
-        System.out.println("Las cartas no emparejadas han sido mezcladas.");
-    }
 }
