@@ -19,7 +19,7 @@ public class CartaBonus {
     public void verCarta(Carta carta){
         carta.voltear(); // Supone que la clase Carta tiene un método para voltearse
         System.out.println("Carta mostrada: " + carta.getValor());
-}   
+    }   
     //general
     public void puntosDobles(Carta carta){
         carta.setDoblePuntos(true); // Supone que la clase Carta tiene una bandera para eso
