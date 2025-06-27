@@ -14,6 +14,7 @@ public class CartaPenalizacion extends Carta{
     private Juego juego;
 
     public CartaPenalizacion(Juego juego) {
+        super(2);
         this.juego = juego;
     }
 

@@ -4,6 +4,7 @@
  */
 package com.uisil.proyecto_juego_cartas.logic;
 
+import com.uisil.proyecto_juego_cartas.model.Carta;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
