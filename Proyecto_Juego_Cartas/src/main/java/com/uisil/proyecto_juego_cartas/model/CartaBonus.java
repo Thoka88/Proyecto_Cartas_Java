@@ -4,37 +4,57 @@
  */
 package com.uisil.proyecto_juego_cartas.model;
 
+import com.uisil.proyecto_juego_cartas.logic.Juego;
 
+import java.util.Collections;
+import java.util.List;
+/**
 /**
  *
  * @author Yordi
  */
-public class CartaBonus {
-    //general
-    public void masCincoSeg(){
-        tiempoRestante += 5; // Asumiendo que tienes una variable tiempoRestante en segundos
-        System.out.println("Se agregaron 5 segundos. Tiempo total: " + tiempoRestante);
+public class CartaBonus extends Carta {
+
+    private Juego juego;
+
+    public CartaBonus(Juego juego) {
+        super(1); // Puedes usar otro id si lo necesitas diferenciar
+        this.juego = juego;
     }
-    //general
-    public void verCarta(Carta carta){
-        carta.voltear(); // Supone que la clase Carta tiene un método para voltearse
-        System.out.println("Carta mostrada: " + carta.getValor());
-}   
-    //general
-    public void puntosDobles(Carta carta){
-        carta.setDoblePuntos(true); // Supone que la clase Carta tiene una bandera para eso
-        System.out.println("¡Esta carta ahora vale doble al emparejarse!");
-    } 
-    //medio
-    public void cartaComodin(Carta carta){
-        carta.setEsComodin(true); // Supone que existe ese atributo en la carta
-        System.out.println("Esta carta es un comodín.");
+
+    // General: Agrega 5 segundos al timer
+    public void masCincoSeg() {
+        juego.restarTiempo(-5); // restar -5 equivale a sumar
+        System.out.println("Se agregaron 5 segundos. Tiempo total: " + juego.getTiempoRestante());
     }
-    
-    //medio
-    public void rastrearPareja(int fila, Carta carta){
-        for (int col = 0; col < tablero[fila].length; col++) {
-            if (tablero[fila][col].getValor().equals(carta.getValor()) && !tablero[fila][col].equals(carta)) {
+
+    // General: Voltea una carta
+    public void verCarta(Carta carta) {
+        carta.voltear();
+        System.out.println("Carta mostrada: " + carta.getId());
+    }
+
+    // General: Esta carta vale doble
+    public void puntosDobles(Carta carta) {
+        if (carta instanceof CartaBonusExtensiones) {
+            ((CartaBonusExtensiones) carta).setDoblePuntos(true);
+            System.out.println("¡Esta carta ahora vale doble al emparejarse!");
+        }
+    }
+
+    // Medio: Convierte carta en comodín
+    public void cartaComodin(Carta carta) {
+        if (carta instanceof CartaBonusExtensiones) {
+            ((CartaBonusExtensiones) carta).setEsComodin(true);
+            System.out.println("Esta carta es un comodín.");
+        }
+    }
+
+    // Medio: Verifica si la pareja está en la misma fila (simulado)
+    public void rastrearParejaEnFila(List<List<Carta>> tablero, int fila, Carta carta) {
+        List<Carta> filaCartas = tablero.get(fila);
+        for (Carta c : filaCartas) {
+            if (!c.equals(carta) && c.getId() == carta.getId()) {
                 System.out.println("La pareja está en la misma fila.");
                 return;
             }
@@ -42,29 +62,28 @@ public class CartaBonus {
         System.out.println("La pareja NO está en la misma fila.");
     }
 
-    //modo dificil
-    public void mostrarPareja(){
-        List<Carta> cartasVisibles = obtenerCartasNoEmparejadas();
-        if (cartasVisibles.size() < 2) return;
+    // Difícil: Voltea una pareja al azar
+    public void mostrarPareja() {
+        List<Carta> disponibles = juego.getCartasNoEmparejadas();
+        if (disponibles.size() < 2) return;
 
-        Collections.shuffle(cartasVisibles);
-        Carta c1 = cartasVisibles.get(0);
-
-        for (Carta c2 : cartasVisibles) {
-            if (!c1.equals(c2) && c1.getValor().equals(c2.getValor())) {
+        Collections.shuffle(disponibles);
+        Carta c1 = disponibles.get(0);
+        for (Carta c2 : disponibles) {
+            if (!c1.equals(c2) && c1.getId() == c2.getId()) {
                 c1.voltear();
                 c2.voltear();
-                System.out.println("Pareja descubierta: " + c1.getValor());
+                System.out.println("Pareja descubierta: " + c1.getId());
                 return;
             }
         }
     }
-    //modo dificil
-    public void mostrarFila(int fila){
-        for (int col = 0; col < tablero[fila].length; col++) {
-            tablero[fila][col].voltear();
+
+    // Difícil: Voltea todas las cartas de una fila
+    public void mostrarFila(List<List<Carta>> tablero, int fila) {
+        for (Carta carta : tablero.get(fila)) {
+            carta.voltear();
         }
         System.out.println("Fila " + fila + " revelada.");
     }
-    
 }
