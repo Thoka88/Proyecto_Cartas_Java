@@ -8,10 +8,13 @@ import com.uisil.proyecto_juego_cartas.logic.Juego;
 
 import java.util.Collections;
 import java.util.List;
+
+/**
 /**
  *
- 
-@author Yordi*/
+ * @author Yordi
+ */
+
 public class CartaBonus extends Carta {
 
     private Juego juego;
@@ -85,4 +88,6 @@ public class CartaBonus extends Carta {
         }
         System.out.println("Fila " + fila + " revelada.");
     }
+
 }
+
