@@ -6,41 +6,69 @@ package com.uisil.proyecto_juego_cartas.controllers;
 
 import com.uisil.proyecto_juego_cartas.logic.Dificultad;
 import com.uisil.proyecto_juego_cartas.logic.Tablero;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 public class MainController {
 
     @FXML
-    private VBox contenedorJuego; // o AnchorPane / BorderPane, según tu diseño FXML
+    private VBox contenedorJuego;
 
-    private Tablero tableroManager;
+    @FXML
+    private Label lblJugador;
 
-    public void initialize() {
-        // Inicializar por defecto con dificultad media
-        cargarTablero(Dificultad.MEDIO);
+    @FXML
+    private Label lblTiempo;
+
+    private Timeline temporizador;
+    private int tiempoRestante;
+
+    public void iniciarJuego(String nombre, Dificultad dificultad) {
+        lblJugador.setText("Jugador: " + nombre);
+        cargarTablero(dificultad);
+        iniciarTemporizador(dificultad);
     }
 
     private void cargarTablero(Dificultad dificultad) {
-        tableroManager = new Tablero(dificultad);
-        contenedorJuego.getChildren().clear();  // limpia el contenedor actual
-        contenedorJuego.getChildren().add(tableroManager.getTablero());
+        Tablero tablero = new Tablero(dificultad);
+        contenedorJuego.getChildren().clear();
+        contenedorJuego.getChildren().add(tablero.getTablero());
     }
 
-    // Puedes tener botones o menú para elegir dificultad
-    @FXML
-    private void onModoFacil() {
-        cargarTablero(Dificultad.FACIL);
-    }
+    private void iniciarTemporizador(Dificultad dificultad) {
+        // ✅ Switch tradicional
+        switch (dificultad) {
+            case FACIL:
+                tiempoRestante = 60;
+                break;
+            case MEDIO:
+                tiempoRestante = 90;
+                break;
+            case DIFICIL:
+                tiempoRestante = 120;
+                break;
+            default:
+                tiempoRestante = 90;
+                break;
+        }
 
-    @FXML
-    private void onModoMedio() {
-        cargarTablero(Dificultad.MEDIO);
-    }
+        lblTiempo.setText("Tiempo: " + tiempoRestante + "s");
 
-    @FXML
-    private void onModoDificil() {
-        cargarTablero(Dificultad.DIFICIL);
+        temporizador = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+            tiempoRestante--;
+            lblTiempo.setText("Tiempo: " + tiempoRestante + "s");
+
+            if (tiempoRestante <= 0) {
+                temporizador.stop();
+                lblTiempo.setText("¡Tiempo agotado!");
+            }
+        }));
+
+        temporizador.setCycleCount(tiempoRestante);
+        temporizador.play();
     }
 }

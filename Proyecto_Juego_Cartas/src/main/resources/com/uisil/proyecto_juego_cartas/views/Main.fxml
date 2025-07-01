@@ -1,12 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.net.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
 
-<VBox fx:id="contenedorJuego" alignment="CENTER" spacing="10" xmlns:fx="http://javafx.com/fxml" fx:controller="com.uisil.proyecto_juego_cartas.controllers.MainController">
-    <!-- Aquí se carga dinámicamente el tablero -->
-</VBox>
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.uisil.proyecto_juego_cartas.controllers.MainController"
+            prefWidth="800" prefHeight="600">
+
+    <top>
+        <HBox spacing="20" alignment="CENTER_LEFT">
+            <padding>
+                <Insets top="15" right="15" bottom="15" left="15"/>
+            </padding>
+            <Label fx:id="lblJugador" text="Jugador: " style="-fx-font-size: 16px;" />
+            <Label fx:id="lblTiempo" text="Tiempo: 0s" style="-fx-font-size: 16px;" />
+        </HBox>
+    </top>
+
+    <center>
+        <VBox fx:id="contenedorJuego" spacing="10" alignment="CENTER" />
+    </center>
+</BorderPane>
