@@ -9,9 +9,9 @@ package com.uisil.proyecto_juego_cartas.logic;
  * @author Thoka
  */
 public enum Dificultad {
-    FACIL(4,4,30),
-    MEDIO(4,5,45),
-    DIFICIL(5,6,60);
+    FACIL(4,4,50),
+    MEDIO(4,5,60),
+    DIFICIL(5,6,80);
 
     
     public final int filas;

@@ -9,14 +9,14 @@ import com.uisil.proyecto_juego_cartas.logic.Juego;
  *
  * @author Yordi
  */
-public class CartaPenalizacion extends Carta{
-// Referencias necesarias (deberías conectarlas con el sistema principal del juego)
+public class CartaPenalizacion extends Carta {
     private Juego juego;
 
-    public CartaPenalizacion(Juego juego) {
-        super(2);
-        this.juego = juego;
-    }
+   public CartaPenalizacion(int id, Juego juego) {
+    super(id);
+    this.juego = juego;
+}
+
 
     // Fácil: Resta 5 segundos al timer
     public void menosCincoSeg() {

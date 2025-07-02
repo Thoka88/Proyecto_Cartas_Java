@@ -18,10 +18,10 @@ public class CartaBonus extends Carta {
 
     private Juego juego;
 
-    public CartaBonus(Juego juego) {
-        super(1); // Puedes usar otro id si lo necesitas diferenciar
-        this.juego = juego;
-    }
+    public CartaBonus(int id, Juego juego) {
+    super(id);
+    this.juego = juego;
+}
 
     // General: Agrega 5 segundos al timer
     public void masCincoSeg() {

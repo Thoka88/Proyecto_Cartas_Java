@@ -12,8 +12,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import com.uisil.proyecto_juego_cartas.logic.Juego;
 
 public class MainController {
+    private Juego juego; // agregamos esta referencia
 
     @FXML
     private VBox contenedorJuego;
@@ -29,38 +31,41 @@ public class MainController {
 
     public void iniciarJuego(String nombre, Dificultad dificultad) {
         lblJugador.setText("Jugador: " + nombre);
+
+        juego = new Juego(); // crear nueva instancia de juego
         cargarTablero(dificultad);
         iniciarTemporizador(dificultad);
     }
 
     private void cargarTablero(Dificultad dificultad) {
-        Tablero tablero = new Tablero(dificultad);
+        Tablero tablero = new Tablero(dificultad, juego); // pasar juego
         contenedorJuego.getChildren().clear();
         contenedorJuego.getChildren().add(tablero.getTablero());
     }
 
     private void iniciarTemporizador(Dificultad dificultad) {
-        // ✅ Switch tradicional
         switch (dificultad) {
-            case FACIL:
-                tiempoRestante = 30;
-                break;
-            case MEDIO:
-                tiempoRestante = 45;
-                break;
-            case DIFICIL:
-                tiempoRestante = 60;
-                break;
-            default:
-                tiempoRestante = 45;
-                break;
-        }
+    case FACIL:
+        tiempoRestante = 50;
+        break;
+    case MEDIO:
+        tiempoRestante = 60;
+        break;
+    case DIFICIL:
+        tiempoRestante = 80;
+        break;
+    default:
+        tiempoRestante = 60;
+        break;
+}
 
         lblTiempo.setText("Tiempo: " + tiempoRestante + "s");
 
         temporizador = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             tiempoRestante--;
-            lblTiempo.setText("Tiempo: " + tiempoRestante + "s");
+            juego.restarTiempo(1); // actualizar tiempo en juego también (para mantener sincronía)
+
+            lblTiempo.setText("Tiempo: " + juego.getTiempoRestante() + "s");
 
             if (tiempoRestante <= 0) {
                 temporizador.stop();
