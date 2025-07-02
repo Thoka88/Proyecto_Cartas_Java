@@ -18,17 +18,17 @@ public class InicioMainController {
     private TextField txtNombreJugador;
 
     @FXML
-    private void iniciarFacil() {
+    public void iniciarFacil() {
         iniciarJuego(Dificultad.FACIL);
     }
 
     @FXML
-    private void iniciarMedio() {
+    public void iniciarMedio() {
         iniciarJuego(Dificultad.MEDIO);
     }
 
     @FXML
-    private void iniciarDificil() {
+    public void iniciarDificil() {
         iniciarJuego(Dificultad.DIFICIL);
     }
 
