@@ -27,8 +27,6 @@
             <Button text="Medio" onAction="#iniciarMedio" maxWidth="100"/>
             <Button text="Difícil" onAction="#iniciarDificil" maxWidth="100"/>
         </HBox>
-
-        <Button text="Iniciar Juego" onAction="#iniciarJuego" maxWidth="200"/>
     </VBox>
 
 </AnchorPane>
