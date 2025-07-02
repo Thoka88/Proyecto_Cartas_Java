@@ -1,0 +1,5 @@
+Jugador: saddsaasd
+Tiempo restante: 72 segundos
+Movimientos: 0
+Bonus activados: 0
+Penalizaciones recibidas: 0
