@@ -43,16 +43,16 @@ public class MainController {
         // ✅ Switch tradicional
         switch (dificultad) {
             case FACIL:
-                tiempoRestante = 60;
+                tiempoRestante = 30;
                 break;
             case MEDIO:
-                tiempoRestante = 90;
+                tiempoRestante = 45;
                 break;
             case DIFICIL:
-                tiempoRestante = 120;
+                tiempoRestante = 60;
                 break;
             default:
-                tiempoRestante = 90;
+                tiempoRestante = 45;
                 break;
         }
 
