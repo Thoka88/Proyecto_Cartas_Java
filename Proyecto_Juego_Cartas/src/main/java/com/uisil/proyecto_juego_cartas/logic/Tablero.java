@@ -19,6 +19,8 @@ import javafx.util.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
+import java.util.Arrays;
 
 public class Tablero {
 
@@ -49,39 +51,55 @@ public class Tablero {
     }
 
     private List<Carta> generarCartas() {
-    int totalCartas = dificultad.filas * dificultad.columnas;
-    List<Carta> lista = new ArrayList<>();
+        int totalCartas = dificultad.filas * dificultad.columnas;
+        List<Carta> lista = new ArrayList<>();
+        int paresNormales = (totalCartas / 2) - 2; // reservar 2 pares para bonus y penalización
 
-    int paresNormales = (totalCartas / 2) - 2; // reservar 2 pares para bonus y penalización
+        // Cartas normales
+        for (int i = 0; i < paresNormales; i++) {
+            Carta c1 = new CartaNormal(i);
+            Carta c2 = new CartaNormal(i);
+            lista.add(c1);
+            lista.add(c2);
+            String ruta = ((CartaNormal) c1).getImagenRuta();
+            Image img = new Image(getClass().getResource(ruta).toExternalForm());
+            imagenesCartas.add(img);
+        }
 
-    // Cartas normales
-    for (int i = 0; i < paresNormales; i++) {
-        Carta c1 = new CartaNormal(i);
-        Carta c2 = new CartaNormal(i);
-        lista.add(c1);
-        lista.add(c2);
-
-        // Pre-cargar imágenes
-        String ruta = ((CartaNormal) c1).getImagenRuta();
-        Image img = new Image(getClass().getResource(ruta).toExternalForm());
-        imagenesCartas.add(img);
+        // --- BONUS Y PENALIZACIÓN SEGÚN DIFICULTAD ---
+        List<CartaBonus.TipoBonus> bonusDisponibles;
+        List<CartaPenalizacion.TipoPenalizacion> penalDisponibles;
+        switch (dificultad) {
+            case FACIL:
+                bonusDisponibles = Arrays.asList(CartaBonus.TipoBonus.MAS_CINCO_SEG);
+                penalDisponibles = Arrays.asList(CartaPenalizacion.TipoPenalizacion.MENOS_CINCO_SEG);
+                break;
+            case MEDIO:
+                bonusDisponibles = Arrays.asList(CartaBonus.TipoBonus.MAS_CINCO_SEG, CartaBonus.TipoBonus.PUNTOS_DOBLES, CartaBonus.TipoBonus.COMODIN);
+                penalDisponibles = Arrays.asList(CartaPenalizacion.TipoPenalizacion.MENOS_DIEZ_SEG, CartaPenalizacion.TipoPenalizacion.VER_UNA_CARTA, CartaPenalizacion.TipoPenalizacion.MENOS_UN_PUNTO);
+                break;
+            case DIFICIL:
+                bonusDisponibles = Arrays.asList(CartaBonus.TipoBonus.MAS_CINCO_SEG, CartaBonus.TipoBonus.MOSTRAR_PAREJA, CartaBonus.TipoBonus.MOSTRAR_FILA);
+                penalDisponibles = Arrays.asList(CartaPenalizacion.TipoPenalizacion.MENOS_TREINTA_SEG, CartaPenalizacion.TipoPenalizacion.MEZCLAR_CARTAS);
+                break;
+            default:
+                bonusDisponibles = Arrays.asList(CartaBonus.TipoBonus.MAS_CINCO_SEG);
+                penalDisponibles = Arrays.asList(CartaPenalizacion.TipoPenalizacion.MENOS_CINCO_SEG);
+        }
+        // Elegir aleatoriamente 2 bonus y 2 penalizaciones (sin repetir)
+        Collections.shuffle(bonusDisponibles);
+        Collections.shuffle(penalDisponibles);
+        CartaBonus bonus1 = new CartaBonus(100, juego, bonusDisponibles.get(0));
+        CartaBonus bonus2 = new CartaBonus(100, juego, bonusDisponibles.size() > 1 ? bonusDisponibles.get(1) : bonusDisponibles.get(0));
+        lista.add(bonus1);
+        lista.add(bonus2);
+        CartaPenalizacion penal1 = new CartaPenalizacion(200, juego, penalDisponibles.get(0));
+        CartaPenalizacion penal2 = new CartaPenalizacion(200, juego, penalDisponibles.size() > 1 ? penalDisponibles.get(1) : penalDisponibles.get(0));
+        lista.add(penal1);
+        lista.add(penal2);
+        Collections.shuffle(lista);
+        return lista;
     }
-
-    // Cartas Bonus (2 unidades, con IDs únicos)
-    CartaBonus bonus1 = new CartaBonus(100, juego);
-    CartaBonus bonus2 = new CartaBonus(100, juego);
-    lista.add(bonus1);
-    lista.add(bonus2);
-
-    // Cartas Penalización (2 unidades, con IDs únicos)
-    CartaPenalizacion penal1 = new CartaPenalizacion(200, juego);
-    CartaPenalizacion penal2 = new CartaPenalizacion(200, juego);
-    lista.add(penal1);
-    lista.add(penal2);
-
-    Collections.shuffle(lista);
-    return lista;
-}
 
     private GridPane construirTablero() {
         GridPane grid = new GridPane();
@@ -114,93 +132,93 @@ public class Tablero {
     }
 
     private StackPane crearCeldaResponsive(Carta carta) {
-    StackPane contenedor = new StackPane();
+        StackPane contenedor = new StackPane();
 
-    Image imagenCarta;
+        Image imagenCarta;
 
-    if (carta instanceof CartaBonus) {
-        imagenCarta = new Image(getClass().getResource("/com/uisil/proyecto_juego_cartas/img/Carta_Bonus.png").toExternalForm());
-    } else if (carta instanceof CartaPenalizacion) {
-        imagenCarta = new Image(getClass().getResource("/com/uisil/proyecto_juego_cartas/img/Carta_Penalizacion.png").toExternalForm());
-    } else {
-        imagenCarta = imagenesCartas.get(carta.getId());
-    }
+        if (carta instanceof CartaBonus) {
+            imagenCarta = new Image(getClass().getResource("/com/uisil/proyecto_juego_cartas/img/Carta_Bonus.png").toExternalForm());
+        } else if (carta instanceof CartaPenalizacion) {
+            imagenCarta = new Image(getClass().getResource("/com/uisil/proyecto_juego_cartas/img/Carta_Penalizacion.png").toExternalForm());
+        } else {
+            imagenCarta = imagenesCartas.get(carta.getId());
+        }
 
-    String imagenReversoURL = imagenReverso.getUrl();
-    String imagenCartaURL = imagenCarta.getUrl();
+        String imagenReversoURL = imagenReverso.getUrl();
+        String imagenCartaURL = imagenCarta.getUrl();
 
-    Button boton = new Button();
-    boton.setPrefSize(180, 180);
-    boton.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        Button boton = new Button();
+        boton.setPrefSize(180, 180);
+        boton.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
-    boton.setStyle("-fx-background-image: url('" + imagenReversoURL + "'); " +
+        boton.setStyle("-fx-background-image: url('" + imagenReversoURL + "'); " +
+               "-fx-background-size: 80% 80%; " +
+               "-fx-background-repeat: no-repeat; " +
+               "-fx-background-position: center center; " +
+               "-fx-border-color: black;");
+
+        boton.setOnAction(e -> {
+        if (esperando || carta.isBocaArriba() || carta.isColocada()) return;
+
+        carta.setBocaArriba(true);
+        boton.setStyle("-fx-background-image: url('" + imagenCartaURL + "'); " +
            "-fx-background-size: 80% 80%; " +
            "-fx-background-repeat: no-repeat; " +
            "-fx-background-position: center center; " +
            "-fx-border-color: black;");
+        cartasSeleccionadas.add(carta);
+        botonesSeleccionados.add(boton);
 
-    boton.setOnAction(e -> {
-    if (esperando || carta.isBocaArriba() || carta.isColocada()) return;
+        if (cartasSeleccionadas.size() == 2) {
+            Carta c1 = cartasSeleccionadas.get(0);
+            Carta c2 = cartasSeleccionadas.get(1);
 
-    carta.setBocaArriba(true);
-    boton.setStyle("-fx-background-image: url('" + imagenCartaURL + "'); " +
-       "-fx-background-size: 80% 80%; " +
-       "-fx-background-repeat: no-repeat; " +
-       "-fx-background-position: center center; " +
-       "-fx-border-color: black;");
-    cartasSeleccionadas.add(carta);
-    botonesSeleccionados.add(boton);
+            esperando = true;
 
-    if (cartasSeleccionadas.size() == 2) {
-        Carta c1 = cartasSeleccionadas.get(0);
-        Carta c2 = cartasSeleccionadas.get(1);
+            if (c1.getId() == c2.getId()) {
+                // Emparejadas: marcar como colocadas
+                c1.colocar();
+                c2.colocar();
 
-        esperando = true;
-
-        if (c1.getId() == c2.getId()) {
-            // Emparejadas: marcar como colocadas
-            c1.colocar();
-            c2.colocar();
-
-            // Si son cartas Bonus o Penalización, aplicar efecto
-            if (c1 instanceof CartaBonus) {
-                ((CartaBonus) c1).masCincoSeg();
-            } else if (c1 instanceof CartaPenalizacion) {
-                ((CartaPenalizacion) c1).menosCincoSeg();
-            }
-
-            cartasSeleccionadas.clear();
-            botonesSeleccionados.clear();
-            esperando = false;
-        } else {
-            // No hacen match: regresarlas a ocultas
-            PauseTransition pausa = new PauseTransition(Duration.seconds(0.5));
-            pausa.setOnFinished(ev -> {
-                c1.setBocaArriba(false);
-                c2.setBocaArriba(false);
-
-                for (Button b : botonesSeleccionados) {
-                    b.setStyle("-fx-background-image: url('" + imagenReversoURL + "'); " +
-                        "-fx-background-size: 80% 80%; " +
-                        "-fx-background-repeat: no-repeat; " +
-                        "-fx-background-position: center center; " +
-                        "-fx-border-color: black;");
+                // Si son cartas Bonus o Penalización, aplicar efecto
+                if (c1 instanceof CartaBonus) {
+                    ((CartaBonus) c1).activarBonus();
+                } else if (c1 instanceof CartaPenalizacion) {
+                    ((CartaPenalizacion) c1).activarPenalizacion();
                 }
 
                 cartasSeleccionadas.clear();
                 botonesSeleccionados.clear();
                 esperando = false;
-            });
-            pausa.play();
+            } else {
+                // No hacen match: regresarlas a ocultas
+                PauseTransition pausa = new PauseTransition(Duration.seconds(0.5));
+                pausa.setOnFinished(ev -> {
+                    c1.setBocaArriba(false);
+                    c2.setBocaArriba(false);
+
+                    for (Button b : botonesSeleccionados) {
+                        b.setStyle("-fx-background-image: url('" + imagenReversoURL + "'); " +
+                            "-fx-background-size: 80% 80%; " +
+                            "-fx-background-repeat: no-repeat; " +
+                            "-fx-background-position: center center; " +
+                            "-fx-border-color: black;");
+                    }
+
+                    cartasSeleccionadas.clear();
+                    botonesSeleccionados.clear();
+                    esperando = false;
+                });
+                pausa.play();
+            }
         }
+    });
+
+        contenedor.getChildren().add(boton);
+        StackPane.setAlignment(boton, Pos.CENTER);
+        StackPane.setMargin(boton, new Insets(5));
+
+        return contenedor;
     }
-});
-
-    contenedor.getChildren().add(boton);
-    StackPane.setAlignment(boton, Pos.CENTER);
-    StackPane.setMargin(boton, new Insets(5));
-
-    return contenedor;
-}
 }
 

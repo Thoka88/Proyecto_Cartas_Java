@@ -16,17 +16,46 @@ import java.util.List;
 
 public class CartaBonus extends Carta {
 
+    public enum TipoBonus {
+        MAS_CINCO_SEG, PUNTOS_DOBLES, COMODIN, MOSTRAR_PAREJA, MOSTRAR_FILA
+    }
+
     private Juego juego;
+    private TipoBonus tipo;
 
-    public CartaBonus(int id, Juego juego) {
-    super(id);
-    this.juego = juego;
-}
+    public CartaBonus(int id, Juego juego, TipoBonus tipo) {
+        super(id);
+        this.juego = juego;
+        this.tipo = tipo;
+    }
 
-    // General: Agrega 5 segundos al timer
-    public void masCincoSeg() {
-        juego.restarTiempo(-5); // restar -5 equivale a sumar
-        System.out.println("Se agregaron 5 segundos. Tiempo total: " + juego.getTiempoRestante());
+    public void activarBonus() {
+        switch (tipo) {
+            case MAS_CINCO_SEG:
+                juego.restarTiempo(-5);
+                System.out.println("Se agregaron 5 segundos. Tiempo total: " + juego.getTiempoRestante());
+                break;
+            case PUNTOS_DOBLES:
+                // Implementar lógica de puntos dobles si aplica
+                System.out.println("¡Esta carta ahora vale doble al emparejarse!");
+                break;
+            case COMODIN:
+                // Implementar lógica de comodín si aplica
+                System.out.println("Esta carta es un comodín.");
+                break;
+            case MOSTRAR_PAREJA:
+                // Implementar lógica de mostrar pareja si aplica
+                System.out.println("Pareja descubierta (simulado)." );
+                break;
+            case MOSTRAR_FILA:
+                // Implementar lógica de mostrar fila si aplica
+                System.out.println("Fila revelada (simulado)." );
+                break;
+        }
+    }
+
+    public TipoBonus getTipo() {
+        return tipo;
     }
 
     // General: Voltea una carta
