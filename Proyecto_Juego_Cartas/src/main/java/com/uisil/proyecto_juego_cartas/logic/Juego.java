@@ -56,6 +56,9 @@ public class Juego {
         Collections.shuffle(cartasNoEmparejadas);
         System.out.println("Cartas no emparejadas mezcladas.");
     }
+    public void setTiempoRestante(int tiempoRestante) {
+    this.tiempoRestante = tiempoRestante;
+}
 
     // Getters para pruebas o para otras clases
     public int getTiempoRestante() {

@@ -5,17 +5,25 @@
 package com.uisil.proyecto_juego_cartas.controllers;
 
 import com.uisil.proyecto_juego_cartas.logic.Dificultad;
+import com.uisil.proyecto_juego_cartas.logic.Juego;
 import com.uisil.proyecto_juego_cartas.logic.Tablero;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.Duration;
-import com.uisil.proyecto_juego_cartas.logic.Juego;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 public class MainController {
-    private Juego juego; // agregamos esta referencia
+    private Juego juego; // Referencia al juego
+    private Stage stage; // Para mostrar diálogos
 
     @FXML
     private VBox contenedorJuego;
@@ -26,54 +34,126 @@ public class MainController {
     @FXML
     private Label lblTiempo;
 
-    private Timeline temporizador;
+    @FXML
+    private Button btnPausar;
+
+    @FXML
+    private Button btnReanudar;
+
+    @FXML
+    private Button btnGuardar;
+
+    private boolean juegoPausado = false;
     private int tiempoRestante;
+    private Timeline temporizador;
+    private Tablero tablero;
+    private String nombreJugador;
 
-    public void iniciarJuego(String nombre, Dificultad dificultad) {
-        lblJugador.setText("Jugador: " + nombre);
-
-        juego = new Juego(); // crear nueva instancia de juego
-        cargarTablero(dificultad);
-        iniciarTemporizador(dificultad);
+    public void setStage(Stage stage) {
+        this.stage = stage;
     }
 
-    private void cargarTablero(Dificultad dificultad) {
-        Tablero tablero = new Tablero(dificultad, juego); // pasar juego
+    public void iniciarJuego(String nombre, Dificultad dificultad) {
+        this.nombreJugador = nombre;
+        this.juego = new Juego();
+
+        lblJugador.setText("Jugador: " + nombre);
+        tablero = new Tablero(dificultad, juego);
         contenedorJuego.getChildren().clear();
         contenedorJuego.getChildren().add(tablero.getTablero());
+        iniciarTemporizador(dificultad);
+
+        btnReanudar.setDisable(true);  // Por defecto, está deshabilitado
     }
 
     private void iniciarTemporizador(Dificultad dificultad) {
         switch (dificultad) {
-    case FACIL:
-        tiempoRestante = 50;
-        break;
-    case MEDIO:
-        tiempoRestante = 60;
-        break;
-    case DIFICIL:
-        tiempoRestante = 80;
-        break;
-    default:
-        tiempoRestante = 60;
-        break;
-}
+            case FACIL:
+                tiempoRestante = 50;
+                break;
+            case MEDIO:
+                tiempoRestante = 60;
+                break;
+            case DIFICIL:
+                tiempoRestante = 80;
+                break;
+            default:
+                tiempoRestante = 60;
+                break;
+        }
+
+        juego.setTiempoRestante(tiempoRestante);
 
         lblTiempo.setText("Tiempo: " + tiempoRestante + "s");
 
         temporizador = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
-            tiempoRestante--;
-            juego.restarTiempo(1); // actualizar tiempo en juego también (para mantener sincronía)
+            if (!juegoPausado) {
+                tiempoRestante--;
+                juego.restarTiempo(1);
 
-            lblTiempo.setText("Tiempo: " + juego.getTiempoRestante() + "s");
+                lblTiempo.setText("Tiempo: " + juego.getTiempoRestante() + "s");
 
-            if (tiempoRestante <= 0) {
-                temporizador.stop();
-                lblTiempo.setText("¡Tiempo agotado!");
+                if (tiempoRestante <= 0) {
+                    temporizador.stop();
+                    lblTiempo.setText("¡Tiempo agotado!");
+                    tablero.setCartasHabilitadas(false);
+                    btnPausar.setDisable(true);
+                    btnReanudar.setDisable(true);
+                    btnGuardar.setDisable(true);
+                }
             }
         }));
 
         temporizador.setCycleCount(tiempoRestante);
         temporizador.play();
     }
+
+    @FXML
+    private void pausarJuego() {
+        juegoPausado = true;
+        temporizador.pause();
+        tablero.setCartasHabilitadas(false);
+        btnPausar.setDisable(true);
+        btnReanudar.setDisable(false);
+    }
+
+    @FXML
+    private void reanudarJuego() {
+        juegoPausado = false;
+        temporizador.play();
+        tablero.setCartasHabilitadas(true);
+        btnPausar.setDisable(false);
+        btnReanudar.setDisable(true);
+    }
+    
+
+    @FXML
+    private void guardarPartida() {
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.setTitle("Guardar partida");
+    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivo de texto", "*.txt"));
+
+    // ✅ Tomamos el Stage desde cualquier nodo (btnGuardar en este caso)
+    File archivo = fileChooser.showSaveDialog(btnGuardar.getScene().getWindow());
+
+    if (archivo != null) {
+        StringBuilder datos = new StringBuilder();
+        datos.append("Jugador: ").append(nombreJugador).append("\n");
+        datos.append("Tiempo restante: ").append(tiempoRestante).append(" segundos\n");
+        datos.append("Movimientos: ").append(tablero.getMovimientos()).append("\n");
+        datos.append("Bonus activados: ").append(tablero.getContadorBonus()).append("\n");
+        datos.append("Penalizaciones recibidas: ").append(tablero.getContadorPenalizaciones()).append("\n");
+
+        try {
+            Files.write(archivo.toPath(), datos.toString().getBytes());
+            System.out.println("Partida guardada en: " + archivo.getAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    } else {
+        System.out.println("Guardado cancelado.");
+    }
 }
+}
+
+

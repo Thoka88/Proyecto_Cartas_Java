@@ -15,6 +15,9 @@
             </padding>
             <Label fx:id="lblJugador" text="Jugador: " style="-fx-font-size: 16px;" />
             <Label fx:id="lblTiempo" text="Tiempo: 0s" style="-fx-font-size: 16px;" />
+            <Button fx:id="btnPausar" text="Pausar" onAction="#pausarJuego"/>
+            <Button fx:id="btnReanudar" text="Reanudar" onAction="#reanudarJuego" disable="true"/>
+            <Button fx:id="btnGuardar" text="Guardar Partida" onAction="#guardarPartida"/>
         </HBox>
     </top>
 

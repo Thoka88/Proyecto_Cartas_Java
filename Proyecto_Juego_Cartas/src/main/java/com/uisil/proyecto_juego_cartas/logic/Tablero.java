@@ -32,6 +32,10 @@ public class Tablero {
     private final List<Button> botonesSeleccionados = new ArrayList<>();
     private final List<Carta> cartasSeleccionadas = new ArrayList<>();
     private boolean esperando = false;
+    private boolean cartasHabilitadas = true;
+    private int movimientos = 0;
+    private int contadorBonus = 0;
+    private int contadorPenalizaciones = 0;
 
     public Tablero(Dificultad dificultad, Juego juego) {
         this.dificultad = dificultad;
@@ -140,7 +144,9 @@ public class Tablero {
            "-fx-border-color: black;");
 
     boton.setOnAction(e -> {
-    if (esperando || carta.isBocaArriba() || carta.isColocada()) return;
+    if (esperando || !cartasHabilitadas || carta.isBocaArriba() || carta.isColocada()) return;
+
+    movimientos++; // Cuenta cada intento
 
     carta.setBocaArriba(true);
     boton.setStyle("-fx-background-image: url('" + imagenCartaURL + "'); " +
@@ -151,40 +157,42 @@ public class Tablero {
     cartasSeleccionadas.add(carta);
     botonesSeleccionados.add(boton);
 
+    // Aplicar efecto solo si hay pareja Bonus/Penalización válida
     if (cartasSeleccionadas.size() == 2) {
         Carta c1 = cartasSeleccionadas.get(0);
         Carta c2 = cartasSeleccionadas.get(1);
 
         esperando = true;
 
-        if (c1.getId() == c2.getId()) {
-            // Emparejadas: marcar como colocadas
-            c1.colocar();
-            c2.colocar();
-
-            // Si son cartas Bonus o Penalización, aplicar efecto
+        if (c1.getClass() == c2.getClass() && c1.getId() == c2.getId()) {
+            // Pareja correcta (sea normal o especial)
             if (c1 instanceof CartaBonus) {
                 ((CartaBonus) c1).masCincoSeg();
+                contadorBonus++;
             } else if (c1 instanceof CartaPenalizacion) {
                 ((CartaPenalizacion) c1).menosCincoSeg();
+                contadorPenalizaciones++;
             }
 
+            c1.colocar();
+            c2.colocar();
             cartasSeleccionadas.clear();
             botonesSeleccionados.clear();
             esperando = false;
         } else {
-            // No hacen match: regresarlas a ocultas
+            // No es pareja: volverlas boca abajo
             PauseTransition pausa = new PauseTransition(Duration.seconds(0.5));
             pausa.setOnFinished(ev -> {
-                c1.setBocaArriba(false);
-                c2.setBocaArriba(false);
+                for (Carta c : cartasSeleccionadas) {
+                    c.setBocaArriba(false);
+                }
 
                 for (Button b : botonesSeleccionados) {
                     b.setStyle("-fx-background-image: url('" + imagenReversoURL + "'); " +
-                        "-fx-background-size: 80% 80%; " +
-                        "-fx-background-repeat: no-repeat; " +
-                        "-fx-background-position: center center; " +
-                        "-fx-border-color: black;");
+                            "-fx-background-size: 80% 80%; " +
+                            "-fx-background-repeat: no-repeat; " +
+                            "-fx-background-position: center center; " +
+                            "-fx-border-color: black;");
                 }
 
                 cartasSeleccionadas.clear();
@@ -201,6 +209,21 @@ public class Tablero {
     StackPane.setMargin(boton, new Insets(5));
 
     return contenedor;
+}
+    public void setCartasHabilitadas(boolean estado) {
+    this.cartasHabilitadas = estado;
+}
+
+public int getMovimientos() {
+    return movimientos;
+}
+
+public int getContadorBonus() {
+    return contadorBonus;
+}
+
+public int getContadorPenalizaciones() {
+    return contadorPenalizaciones;
 }
 }
 
