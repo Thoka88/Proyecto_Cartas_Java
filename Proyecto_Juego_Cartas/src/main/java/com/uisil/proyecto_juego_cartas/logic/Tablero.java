@@ -15,7 +15,6 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.util.Duration;
-import com.uisil.proyecto_juego_cartas.controllers.MainController;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,7 +27,7 @@ import java.util.HashMap;
 public class Tablero {
 
     private Dificultad dificultad;
-    private Juego juego; // agregamos esta referencia
+    private Juego juego;
     private GridPane tablero;
     private List<Carta> cartas;
     private List<Image> imagenesCartas = new ArrayList<>();
@@ -37,16 +36,18 @@ public class Tablero {
     private final List<Button> botonesSeleccionados = new ArrayList<>();
     private final List<Carta> cartasSeleccionadas = new ArrayList<>();
     private boolean esperando = false;
-    private MainController mainController;
-    private Map<Carta, Button> cartaBotonMap = new HashMap<>();
 
-    public Tablero(Dificultad dificultad, Juego juego, MainController mainController) {
+    private int movimientos = 0;
+    private int contadorBonus = 0;
+    private int contadorPenalizaciones = 0;
+
+    private boolean cartasHabilitadas = true;
+
+    public Tablero(Dificultad dificultad, Juego juego) {
         this.dificultad = dificultad;
         this.juego = juego;
-        this.mainController = mainController;
         this.cartas = generarCartas();
         this.tablero = construirTablero();
-        this.juego.setTablero(this);
     }
 
     public GridPane getTablero() {
@@ -157,7 +158,6 @@ public class Tablero {
         Button boton = new Button();
         boton.setPrefSize(180, 180);
         boton.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        cartaBotonMap.put(carta, boton);
 
         boton.setStyle("-fx-background-image: url('" + imagenReversoURL + "'); " +
                "-fx-background-size: 80% 80%; " +
@@ -229,87 +229,18 @@ public class Tablero {
         return contenedor;
     }
 
-    public MainController getMainController() {
-        return mainController;
+    public int getMovimientos() {
+        return movimientos;
+    }
+    public int getContadorBonus() {
+        return contadorBonus;
+    }
+    public int getContadorPenalizaciones() {
+        return contadorPenalizaciones;
     }
 
-    public void mostrarMensajeBonus(String mensaje) {
-        if (mainController != null) {
-            mainController.mostrarMensaje("BONUS: " + mensaje);
-        }
-    }
-    public void mostrarMensajePenalizacion(String mensaje) {
-        if (mainController != null) {
-            mainController.mostrarMensaje("PENALIZACIÓN: " + mensaje);
-        }
-    }
-
-    public void voltearVisualmenteCarta(Carta carta, boolean bocaArriba) {
-        Button boton = cartaBotonMap.get(carta);
-        if (boton == null) return;
-        Image imagenCarta;
-        if (carta instanceof com.uisil.proyecto_juego_cartas.model.CartaBonus) {
-            imagenCarta = new Image(getClass().getResource("/com/uisil/proyecto_juego_cartas/img/Carta_Bonus.png").toExternalForm());
-        } else if (carta instanceof com.uisil.proyecto_juego_cartas.model.CartaPenalizacion) {
-            imagenCarta = new Image(getClass().getResource("/com/uisil/proyecto_juego_cartas/img/Carta_Penalizacion.png").toExternalForm());
-        } else {
-            imagenCarta = imagenesCartas.get(carta.getId());
-        }
-        String imagenReversoURL = imagenReverso.getUrl();
-        String imagenCartaURL = imagenCarta.getUrl();
-        if (bocaArriba) {
-            boton.setStyle("-fx-background-image: url('" + imagenCartaURL + "'); " +
-                    "-fx-background-size: 80% 80%; " +
-                    "-fx-background-repeat: no-repeat; " +
-                    "-fx-background-position: center center; " +
-                    "-fx-border-color: black;");
-        } else {
-            boton.setStyle("-fx-background-image: url('" + imagenReversoURL + "'); " +
-                    "-fx-background-size: 80% 80%; " +
-                    "-fx-background-repeat: no-repeat; " +
-                    "-fx-background-position: center center; " +
-                    "-fx-border-color: black;");
-        }
-    }
-
-    public Map<Carta, Button> getCartaBotonMap() {
-        return cartaBotonMap;
-    }
-
-    public void mezclarCartasNoEmparejadasVisual(List<Carta> noEmparejadas) {
-        // Mezclar la lista
-        Collections.shuffle(noEmparejadas);
-        // Quitar todas las cartas no emparejadas del grid
-        for (Carta carta : noEmparejadas) {
-            Button boton = cartaBotonMap.get(carta);
-            if (boton != null) {
-                StackPane celda = (StackPane) boton.getParent();
-                if (celda != null) {
-                    GridPane grid = (GridPane) celda.getParent();
-                    if (grid != null) {
-                        grid.getChildren().remove(celda);
-                    }
-                }
-            }
-        }
-        // Volver a agregarlas en nuevas posiciones
-        int index = 0;
-        for (int fila = 0; fila < dificultad.filas; fila++) {
-            for (int col = 0; col < dificultad.columnas; col++) {
-                if (index >= cartas.size()) break;
-                Carta carta = cartas.get(index);
-                if (!carta.isColocada() && noEmparejadas.contains(carta)) {
-                    Button boton = cartaBotonMap.get(carta);
-                    if (boton != null) {
-                        StackPane celda = (StackPane) boton.getParent();
-                        if (celda != null) {
-                            tablero.add(celda, col, fila);
-                        }
-                    }
-                }
-                index++;
-            }
-        }
+    public void setCartasHabilitadas(boolean estado) {
+        this.cartasHabilitadas = estado;
     }
 }
 
