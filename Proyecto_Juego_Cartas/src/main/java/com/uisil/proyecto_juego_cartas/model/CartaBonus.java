@@ -5,9 +5,11 @@
 package com.uisil.proyecto_juego_cartas.model;
 
 import com.uisil.proyecto_juego_cartas.logic.Juego;
+import com.uisil.proyecto_juego_cartas.logic.Tablero;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  *
@@ -17,7 +19,7 @@ import java.util.List;
 public class CartaBonus extends Carta {
 
     public enum TipoBonus {
-        MAS_CINCO_SEG, PUNTOS_DOBLES, COMODIN, MOSTRAR_PAREJA, MOSTRAR_FILA
+        MAS_CINCO_SEG, PUNTOS_DOBLES, COMODIN, MOSTRAR_PAREJA, MOSTRAR_TRESPAREJAS
     }
 
     private Juego juego;
@@ -30,26 +32,74 @@ public class CartaBonus extends Carta {
     }
 
     public void activarBonus() {
+        Tablero tablero = juego.getTablero();
         switch (tipo) {
             case MAS_CINCO_SEG:
                 juego.restarTiempo(-5);
-                System.out.println("Se agregaron 5 segundos. Tiempo total: " + juego.getTiempoRestante());
+                if (tablero != null) tablero.mostrarMensajeBonus("¡Sumaste 5 segundos!");
                 break;
             case PUNTOS_DOBLES:
-                // Implementar lógica de puntos dobles si aplica
-                System.out.println("¡Esta carta ahora vale doble al emparejarse!");
+                if (tablero != null) tablero.mostrarMensajeBonus("¡Tus puntos valen doble!");
                 break;
             case COMODIN:
-                // Implementar lógica de comodín si aplica
-                System.out.println("Esta carta es un comodín.");
+                if (tablero != null) tablero.mostrarMensajeBonus("¡Tienes un comodín!");
                 break;
             case MOSTRAR_PAREJA:
-                // Implementar lógica de mostrar pareja si aplica
-                System.out.println("Pareja descubierta (simulado)." );
+                if (tablero != null) {
+                    // Revelar una pareja al azar que no haya sido encontrada
+                    List<Carta> disponibles = new ArrayList<>(juego.getCartasNoEmparejadas());
+                    if (disponibles.size() >= 2) {
+                        Collections.shuffle(disponibles);
+                        Carta c1 = null, c2 = null;
+                        outer:
+                        for (int i = 0; i < disponibles.size(); i++) {
+                            for (int j = i + 1; j < disponibles.size(); j++) {
+                                if (disponibles.get(i).getId() == disponibles.get(j).getId()) {
+                                    c1 = disponibles.get(i);
+                                    c2 = disponibles.get(j);
+                                    break outer;
+                                }
+                            }
+                        }
+                        if (c1 != null && c2 != null) {
+                            c1.setBocaArriba(true);
+                            c2.setBocaArriba(true);
+                            tablero.voltearVisualmenteCarta(c1, true);
+                            tablero.voltearVisualmenteCarta(c2, true);
+                            juego.emparejarCartas(c1, c2);
+                        }
+                    }
+                    tablero.mostrarMensajeBonus("¡Se reveló una pareja al azar!");
+                }
                 break;
-            case MOSTRAR_FILA:
-                // Implementar lógica de mostrar fila si aplica
-                System.out.println("Fila revelada (simulado)." );
+            case MOSTRAR_TRESPAREJAS:
+                // Revelar hasta 3 parejas al azar que no hayan sido encontradas
+                List<Carta> noEmparejadas = new ArrayList<>(juego.getCartasNoEmparejadas());
+                Collections.shuffle(noEmparejadas);
+                int parejasMostradas = 0;
+                List<Carta> usadas = new ArrayList<>();
+                for (int i = 0; i < noEmparejadas.size() && parejasMostradas < 3; i++) {
+                    Carta c1 = noEmparejadas.get(i);
+                    if (usadas.contains(c1)) continue;
+                    for (int j = i + 1; j < noEmparejadas.size(); j++) {
+                        Carta c2 = noEmparejadas.get(j);
+                        if (usadas.contains(c2)) continue;
+                        if (c1.getId() == c2.getId()) {
+                            c1.setBocaArriba(true);
+                            c2.setBocaArriba(true);
+                            if (tablero != null) {
+                                tablero.voltearVisualmenteCarta(c1, true);
+                                tablero.voltearVisualmenteCarta(c2, true);
+                            }
+                            juego.emparejarCartas(c1, c2);
+                            usadas.add(c1);
+                            usadas.add(c2);
+                            parejasMostradas++;
+                            break;
+                        }
+                    }
+                }
+                if (tablero != null) tablero.mostrarMensajeBonus("¡Se revelaron " + parejasMostradas + " parejas al azar!");
                 break;
         }
     }

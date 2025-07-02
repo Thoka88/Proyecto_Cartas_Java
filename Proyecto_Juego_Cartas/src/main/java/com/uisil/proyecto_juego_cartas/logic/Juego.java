@@ -18,6 +18,7 @@ public class Juego {
     private int puntajeJugador;
     private int turnosRestriccionUnaCarta;
     private List<Carta> cartasNoEmparejadas;
+    private Tablero tablero;
 
     public Juego() {
         this.tiempoRestante = 60; // ejemplo de tiempo inicial
@@ -74,5 +75,20 @@ public class Juego {
         return cartasNoEmparejadas;
     }
 
+    public void setTablero(Tablero tablero) {
+        this.tablero = tablero;
+    }
+
+    public Tablero getTablero() {
+        return tablero;
+    }
+
     // Aquí podrías agregar métodos para manejar el paso de turnos y disminuir turnosRestriccionUnaCarta, etc.
+
+    public void emparejarCartas(Carta c1, Carta c2) {
+        c1.colocar();
+        c2.colocar();
+        cartasNoEmparejadas.remove(c1);
+        cartasNoEmparejadas.remove(c2);
+    }
 }

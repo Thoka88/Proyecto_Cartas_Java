@@ -26,6 +26,9 @@ public class MainController {
     @FXML
     private Label lblTiempo;
 
+    @FXML
+    private Label lblMensaje;
+
     private Timeline temporizador;
     private int tiempoRestante;
 
@@ -38,7 +41,7 @@ public class MainController {
     }
 
     private void cargarTablero(Dificultad dificultad) {
-        Tablero tablero = new Tablero(dificultad, juego); // pasar juego
+        Tablero tablero = new Tablero(dificultad, juego, this); // pasar referencia a MainController
         contenedorJuego.getChildren().clear();
         contenedorJuego.getChildren().add(tablero.getTablero());
     }
@@ -75,5 +78,13 @@ public class MainController {
 
         temporizador.setCycleCount(tiempoRestante);
         temporizador.play();
+    }
+
+    public void mostrarMensaje(String mensaje) {
+        lblMensaje.setText(mensaje);
+        lblMensaje.setVisible(true);
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), e -> lblMensaje.setVisible(false)));
+        timeline.setCycleCount(1);
+        timeline.play();
     }
 }
