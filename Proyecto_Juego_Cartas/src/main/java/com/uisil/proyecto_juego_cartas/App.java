@@ -1,8 +1,5 @@
 package com.uisil.proyecto_juego_cartas;
 
-/**
- * JavaFX App
- */
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,33 +7,29 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import static javafx.application.Application.launch;
 
-/**
- * JavaFX App
- */
 public class App extends Application {
 
-    private static Scene scene;
+    private static Stage primaryStage;
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("InicioMain"), 640, 480);
+        primaryStage = stage;  // guarda el stage principal por si lo necesitas luego
+
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("/com/uisil/proyecto_juego_cartas/views/InicioMain.fxml"));
+        Parent root = fxmlLoader.load();
+
+        Scene scene = new Scene(root, 640, 480); // ✅ declarar la variable
         stage.setScene(scene);
+        stage.setTitle("Pantalla de Inicio");
         stage.show();
     }
 
-    static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(fxml));
-    }
-
-    private static Parent loadFXML(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("/com/uisil/proyecto_juego_cartas/views/"+ fxml + ".fxml"));
-        return fxmlLoader.load();
-    }
-
     public static void main(String[] args) {
-        launch();
+        launch(args);
     }
 
+    public static Stage getPrimaryStage() {
+        return primaryStage;
+    }
 }
