@@ -16,6 +16,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,6 +26,7 @@ public class MainController {
     private Juego juego; // Referencia al juego
     private Stage stage; // Para mostrar diálogos
 
+
     @FXML
     private VBox contenedorJuego;
 
@@ -33,6 +35,7 @@ public class MainController {
 
     @FXML
     private Label lblTiempo;
+
 
     @FXML
     private Label lblMensaje;
@@ -66,6 +69,7 @@ public class MainController {
         iniciarTemporizador(dificultad);
 
         btnReanudar.setDisable(true);  // Por defecto, está deshabilitado
+
     }
 
     private void iniciarTemporizador(Dificultad dificultad) {
@@ -84,11 +88,13 @@ public class MainController {
                 break;
         }
 
+
         juego.setTiempoRestante(tiempoRestante);
 
-        lblTiempo.setText("Tiempo: " + tiempoRestante + "s");
 
+        lblTiempo.setText("Tiempo: " + tiempoRestante + "s");
         temporizador = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+
             if (!juegoPausado) {
                 tiempoRestante--;
                 juego.restarTiempo(1);
@@ -103,9 +109,9 @@ public class MainController {
                     btnReanudar.setDisable(true);
                     btnGuardar.setDisable(true);
                 }
+
             }
         }));
-
         temporizador.setCycleCount(tiempoRestante);
         temporizador.play();
     }
@@ -163,5 +169,7 @@ public class MainController {
         System.out.println("Guardado cancelado.");
     }
 }
+
 }
+
 
