@@ -10,7 +10,6 @@ import com.uisil.proyecto_juego_cartas.logic.Tablero;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -20,6 +19,7 @@ import javafx.util.Duration;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import javafx.scene.control.Button;
 
 public class MainController {
     private Juego juego; // Referencia al juego
@@ -35,6 +35,8 @@ public class MainController {
     private Label lblTiempo;
 
     @FXML
+    private Label lblMensaje;
+    @FXML
     private Button btnPausar;
 
     @FXML
@@ -43,9 +45,9 @@ public class MainController {
     @FXML
     private Button btnGuardar;
 
+    private Timeline temporizador;
     private boolean juegoPausado = false;
     private int tiempoRestante;
-    private Timeline temporizador;
     private Tablero tablero;
     private String nombreJugador;
 
@@ -53,12 +55,12 @@ public class MainController {
         this.stage = stage;
     }
 
-    public void iniciarJuego(String nombre, Dificultad dificultad) {
+   public void iniciarJuego(String nombre, Dificultad dificultad) {
         this.nombreJugador = nombre;
         this.juego = new Juego();
 
         lblJugador.setText("Jugador: " + nombre);
-        tablero = new Tablero(dificultad, juego);
+        tablero = new Tablero(dificultad, juego, this);
         contenedorJuego.getChildren().clear();
         contenedorJuego.getChildren().add(tablero.getTablero());
         iniciarTemporizador(dificultad);
@@ -106,6 +108,13 @@ public class MainController {
 
         temporizador.setCycleCount(tiempoRestante);
         temporizador.play();
+    }
+    public void mostrarMensaje(String mensaje) {
+        lblMensaje.setText(mensaje);
+        lblMensaje.setVisible(true);
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), e -> lblMensaje.setVisible(false)));
+        timeline.setCycleCount(1);
+        timeline.play();
     }
 
     @FXML
@@ -155,5 +164,4 @@ public class MainController {
     }
 }
 }
-
 

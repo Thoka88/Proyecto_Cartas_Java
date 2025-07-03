@@ -12,6 +12,7 @@ public enum Dificultad {
     FACIL(4,4,50),
     MEDIO(4,5,60),
     DIFICIL(5,6,80);
+
     
     public final int filas;
     public final int columnas;
