@@ -19,7 +19,6 @@ import com.uisil.proyecto_juego_cartas.controllers.MainController;
 
 import java.util.*;
 
-
 public class Tablero {
 
     private Dificultad dificultad;
@@ -39,9 +38,7 @@ public class Tablero {
     private MainController mainController;
     private Map<Carta, Button> cartaBotonMap = new HashMap<>();
 
-
     public Tablero(Dificultad dificultad, Juego juego, MainController mainController) {
-
         this.dificultad = dificultad;
         this.juego = juego;
         this.mainController = mainController;
@@ -61,9 +58,7 @@ public class Tablero {
     private List<Carta> generarCartas() {
         int totalCartas = dificultad.filas * dificultad.columnas;
         List<Carta> lista = new ArrayList<>();
-
         int paresNormales = (totalCartas / 2) - 2;
-
 
         for (int i = 0; i < paresNormales; i++) {
             Carta c1 = new CartaNormal(i);
@@ -74,7 +69,6 @@ public class Tablero {
             Image img = new Image(getClass().getResource(ruta).toExternalForm());
             imagenesCartas.add(img);
         }
-
 
         List<CartaBonus.TipoBonus> bonusDisponibles;
         List<CartaPenalizacion.TipoPenalizacion> penalDisponibles;
@@ -95,7 +89,6 @@ public class Tablero {
                 bonusDisponibles = Arrays.asList(CartaBonus.TipoBonus.MAS_CINCO_SEG);
                 penalDisponibles = Arrays.asList(CartaPenalizacion.TipoPenalizacion.MENOS_CINCO_SEG);
         }
-
 
         Collections.shuffle(bonusDisponibles);
         Collections.shuffle(penalDisponibles);
@@ -160,9 +153,7 @@ public class Tablero {
         Button boton = new Button();
         boton.setPrefSize(180, 180);
         boton.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-
         cartaBotonMap.put(carta, boton);
-
 
         boton.setStyle("-fx-background-image: url('" + imagenReversoURL + "'); " +
                "-fx-background-size: 80% 80%; " +
@@ -183,9 +174,7 @@ public class Tablero {
         botonesSeleccionados.add(boton);
 
         if (cartasSeleccionadas.size() == 2) {
-
             movimientos++;
-
             Carta c1 = cartasSeleccionadas.get(0);
             Carta c2 = cartasSeleccionadas.get(1);
 
@@ -198,7 +187,6 @@ public class Tablero {
 
                 // Si son cartas Bonus o Penalización, aplicar efecto
                 if (c1 instanceof CartaBonus) {
-
                 CartaBonus bonus = (CartaBonus) c1;
                 bonus.activarBonus();
                 contadorBonus++;
@@ -211,7 +199,6 @@ public class Tablero {
                 registrarEventoEnArchivo("PENALIZACIÓN", penal.getTipo().name());
                 mostrarMensajePenalizacion(penal.getTipo().name());
 }
-
 
                 cartasSeleccionadas.clear();
                 botonesSeleccionados.clear();
@@ -237,7 +224,6 @@ public class Tablero {
                 });
                 pausa.play();
             }
-
         }
     });
 
@@ -262,15 +248,7 @@ public class Tablero {
     public void mostrarMensajePenalizacion(String mensaje) {
         if (mainController != null) {
             mainController.mostrarMensaje("PENALIZACIÓN: " + mensaje);
-
         }
-    });
-
-        contenedor.getChildren().add(boton);
-        StackPane.setAlignment(boton, Pos.CENTER);
-        StackPane.setMargin(boton, new Insets(5));
-
-        return contenedor;
     }
 
     public void voltearVisualmenteCarta(Carta carta, boolean bocaArriba) {
@@ -364,7 +342,6 @@ public int getContadorPenalizaciones() {
             }
         }
     }
-
 
 }
 
