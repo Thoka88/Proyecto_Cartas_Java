@@ -23,6 +23,14 @@ public enum Dificultad {
         this.columnas = columnas;
         this.tiempoInicial = tiempoInicial;
     }
+    public static Dificultad fromString(String nombre) {
+        for (Dificultad d : Dificultad.values()) {
+            if (d.name().equalsIgnoreCase(nombre)) {
+                return d;
+            }
+        }
+        throw new IllegalArgumentException("Dificultad desconocida: " + nombre);
+    }
     
     
     

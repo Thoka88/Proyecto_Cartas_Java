@@ -35,6 +35,7 @@ public class Tablero {
     private int contadorBonus = 0;
     private int contadorPenalizaciones = 0;
     private boolean esperando = false;
+    private int puntos =0;
     private MainController mainController;
     private Map<Carta, Button> cartaBotonMap = new HashMap<>();
 
@@ -133,6 +134,35 @@ public class Tablero {
 
         return grid;
     }
+    public void reconstruirDesdeEstado(PartidaGuardada partida) {
+    List<CartaEstado> estados = partida.getCartas();
+    for (CartaEstado estado : estados) {
+        for (Carta carta : cartas) {
+            if (carta.getId() == estado.getId()) {
+                carta.setColocada(estado.isColocada());
+                carta.setBocaArriba(estado.isBocaArriba());
+
+                // 🔁 Mostrar visualmente cómo quedó la carta
+                voltearVisualmenteCarta(carta, estado.isBocaArriba());
+
+                // 🔒 Si está colocada, tal vez deberías desactivar su botón
+                if (estado.isColocada()) {
+                    Button boton = cartaBotonMap.get(carta);
+                    if (boton != null) {
+                        boton.setDisable(true);
+                    }
+                }
+            }
+        }
+    }
+
+    this.movimientos = partida.getMovimientos();
+    this.contadorBonus = partida.getContadorBonus();
+    this.contadorPenalizaciones = partida.getContadorPenalizaciones();
+    this.puntos = partida.getPuntos(); // Si guardaste esto
+
+    mainController.actualizarPuntaje(puntos); // Asegúrate de mostrar puntos correctamente
+}
 
     private StackPane crearCeldaResponsive(Carta carta) {
         StackPane contenedor = new StackPane();
@@ -184,19 +214,21 @@ public class Tablero {
                 // Emparejadas: marcar como colocadas
                 c1.colocar();
                 c2.colocar();
+                puntos += 10;  // o la cantidad que desees por match
+                mainController.actualizarPuntaje(puntos);  // Mostrarlo en pantalla
 
                 // Si son cartas Bonus o Penalización, aplicar efecto
                 if (c1 instanceof CartaBonus) {
                 CartaBonus bonus = (CartaBonus) c1;
                 bonus.activarBonus();
                 contadorBonus++;
-                registrarEventoEnArchivo("BONUS", bonus.getTipo().name());
+                //registrarEventoEnArchivo("BONUS", bonus.getTipo().name());
                 mostrarMensajeBonus(bonus.getTipo().name());
                 } else if (c1 instanceof CartaPenalizacion) {
                 CartaPenalizacion penal = (CartaPenalizacion) c1;
                 penal.activarPenalizacion();
                 contadorPenalizaciones++;
-                registrarEventoEnArchivo("PENALIZACIÓN", penal.getTipo().name());
+                //registrarEventoEnArchivo("PENALIZACIÓN", penal.getTipo().name());
                 mostrarMensajePenalizacion(penal.getTipo().name());
 }
 
@@ -290,24 +322,19 @@ public int getContadorPenalizaciones() {
 }
     
 
-    public Map<Carta, Button> getCartaBotonMap() {
-        return cartaBotonMap;
+public Map<Carta, Button> getCartaBotonMap() {
+    return cartaBotonMap;
     }
-     public void setCartasHabilitadas(boolean estado) {
+    public void setCartasHabilitadas(boolean estado) {
     this.cartasHabilitadas = estado;
 }
-     private void registrarEventoEnArchivo(String tipo, String descripcion) {
-    try {
-        java.io.FileWriter writer = new java.io.FileWriter("registro_eventos.txt", true);
-        writer.write(tipo + ": " + descripcion + "\n");
-        writer.close();
-    } catch (java.io.IOException e) {
-        e.printStackTrace();
-    }
+    public int getPuntos() {
+    return puntos;
 }
+
      
 
-    public void mezclarCartasNoEmparejadasVisual(List<Carta> noEmparejadas) {
+public void mezclarCartasNoEmparejadasVisual(List<Carta> noEmparejadas) {
         // Mezclar la lista
         Collections.shuffle(noEmparejadas);
         // Quitar todas las cartas no emparejadas del grid
