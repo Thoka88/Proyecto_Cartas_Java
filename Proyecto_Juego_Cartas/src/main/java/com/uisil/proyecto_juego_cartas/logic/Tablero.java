@@ -15,14 +15,10 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.util.Duration;
+import com.uisil.proyecto_juego_cartas.controllers.MainController;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
+
 
 public class Tablero {
 
@@ -35,19 +31,23 @@ public class Tablero {
 
     private final List<Button> botonesSeleccionados = new ArrayList<>();
     private final List<Carta> cartasSeleccionadas = new ArrayList<>();
-    private boolean esperando = false;
-
+    private boolean cartasHabilitadas = true;
     private int movimientos = 0;
     private int contadorBonus = 0;
     private int contadorPenalizaciones = 0;
+    private boolean esperando = false;
+    private MainController mainController;
+    private Map<Carta, Button> cartaBotonMap = new HashMap<>();
 
-    private boolean cartasHabilitadas = true;
 
-    public Tablero(Dificultad dificultad, Juego juego) {
+    public Tablero(Dificultad dificultad, Juego juego, MainController mainController) {
+
         this.dificultad = dificultad;
         this.juego = juego;
+        this.mainController = mainController;
         this.cartas = generarCartas();
         this.tablero = construirTablero();
+        this.juego.setTablero(this);
     }
 
     public GridPane getTablero() {
@@ -61,9 +61,10 @@ public class Tablero {
     private List<Carta> generarCartas() {
         int totalCartas = dificultad.filas * dificultad.columnas;
         List<Carta> lista = new ArrayList<>();
-        int paresNormales = (totalCartas / 2) - 2; // reservar 2 pares para bonus y penalización
 
-        // Cartas normales
+        int paresNormales = (totalCartas / 2) - 2;
+
+
         for (int i = 0; i < paresNormales; i++) {
             Carta c1 = new CartaNormal(i);
             Carta c2 = new CartaNormal(i);
@@ -74,7 +75,7 @@ public class Tablero {
             imagenesCartas.add(img);
         }
 
-        // --- BONUS Y PENALIZACIÓN SEGÚN DIFICULTAD ---
+
         List<CartaBonus.TipoBonus> bonusDisponibles;
         List<CartaPenalizacion.TipoPenalizacion> penalDisponibles;
         switch (dificultad) {
@@ -94,7 +95,8 @@ public class Tablero {
                 bonusDisponibles = Arrays.asList(CartaBonus.TipoBonus.MAS_CINCO_SEG);
                 penalDisponibles = Arrays.asList(CartaPenalizacion.TipoPenalizacion.MENOS_CINCO_SEG);
         }
-        // Elegir aleatoriamente 2 bonus y 2 penalizaciones (sin repetir)
+
+
         Collections.shuffle(bonusDisponibles);
         Collections.shuffle(penalDisponibles);
         CartaBonus bonus1 = new CartaBonus(100, juego, bonusDisponibles.get(0));
@@ -159,6 +161,9 @@ public class Tablero {
         boton.setPrefSize(180, 180);
         boton.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
+        cartaBotonMap.put(carta, boton);
+
+
         boton.setStyle("-fx-background-image: url('" + imagenReversoURL + "'); " +
                "-fx-background-size: 80% 80%; " +
                "-fx-background-repeat: no-repeat; " +
@@ -178,6 +183,9 @@ public class Tablero {
         botonesSeleccionados.add(boton);
 
         if (cartasSeleccionadas.size() == 2) {
+
+            movimientos++;
+
             Carta c1 = cartasSeleccionadas.get(0);
             Carta c2 = cartasSeleccionadas.get(1);
 
@@ -190,10 +198,20 @@ public class Tablero {
 
                 // Si son cartas Bonus o Penalización, aplicar efecto
                 if (c1 instanceof CartaBonus) {
-                    ((CartaBonus) c1).activarBonus();
+
+                CartaBonus bonus = (CartaBonus) c1;
+                bonus.activarBonus();
+                contadorBonus++;
+                registrarEventoEnArchivo("BONUS", bonus.getTipo().name());
+                mostrarMensajeBonus(bonus.getTipo().name());
                 } else if (c1 instanceof CartaPenalizacion) {
-                    ((CartaPenalizacion) c1).activarPenalizacion();
-                }
+                CartaPenalizacion penal = (CartaPenalizacion) c1;
+                penal.activarPenalizacion();
+                contadorPenalizaciones++;
+                registrarEventoEnArchivo("PENALIZACIÓN", penal.getTipo().name());
+                mostrarMensajePenalizacion(penal.getTipo().name());
+}
+
 
                 cartasSeleccionadas.clear();
                 botonesSeleccionados.clear();
@@ -219,6 +237,32 @@ public class Tablero {
                 });
                 pausa.play();
             }
+
+        }
+    });
+
+        contenedor.getChildren().add(boton);
+        StackPane.setAlignment(boton, Pos.CENTER);
+        StackPane.setMargin(boton, new Insets(5));
+
+        return contenedor;
+        
+    }
+    
+
+    public MainController getMainController() {
+        return mainController;
+    }
+
+    public void mostrarMensajeBonus(String mensaje) {
+        if (mainController != null) {
+            mainController.mostrarMensaje("BONUS: " + mensaje);
+        }
+    }
+    public void mostrarMensajePenalizacion(String mensaje) {
+        if (mainController != null) {
+            mainController.mostrarMensaje("PENALIZACIÓN: " + mensaje);
+
         }
     });
 
@@ -229,18 +273,100 @@ public class Tablero {
         return contenedor;
     }
 
-    public int getMovimientos() {
-        return movimientos;
-    }
-    public int getContadorBonus() {
-        return contadorBonus;
-    }
-    public int getContadorPenalizaciones() {
-        return contadorPenalizaciones;
-    }
+    public void voltearVisualmenteCarta(Carta carta, boolean bocaArriba) {
+        Button boton = cartaBotonMap.get(carta);
+        if (boton == null) return;
+        Image imagenCarta;
+        if (carta instanceof com.uisil.proyecto_juego_cartas.model.CartaBonus) {
+            imagenCarta = new Image(getClass().getResource("/com/uisil/proyecto_juego_cartas/img/Carta_Bonus.png").toExternalForm());
+        } else if (carta instanceof com.uisil.proyecto_juego_cartas.model.CartaPenalizacion) {
+            imagenCarta = new Image(getClass().getResource("/com/uisil/proyecto_juego_cartas/img/Carta_Penalizacion.png").toExternalForm());
+        } else {
+            imagenCarta = imagenesCartas.get(carta.getId());
+        }
+        String imagenReversoURL = imagenReverso.getUrl();
+        String imagenCartaURL = imagenCarta.getUrl();
+        if (bocaArriba) {
+            boton.setStyle("-fx-background-image: url('" + imagenCartaURL + "'); " +
+                    "-fx-background-size: 80% 80%; " +
+                    "-fx-background-repeat: no-repeat; " +
+                    "-fx-background-position: center center; " +
+                    "-fx-border-color: black;");
+        } else {
+            boton.setStyle("-fx-background-image: url('" + imagenReversoURL + "'); " +
+                    "-fx-background-size: 80% 80%; " +
+                    "-fx-background-repeat: no-repeat; " +
+                    "-fx-background-position: center center; " +
+                    "-fx-border-color: black;");
+        }
+    }public int getMovimientos() {
+    return movimientos;
+}
 
-    public void setCartasHabilitadas(boolean estado) {
-        this.cartasHabilitadas = estado;
+public int getContadorBonus() {
+    return contadorBonus;
+}
+
+public int getContadorPenalizaciones() {
+    return contadorPenalizaciones;
+}
+    
+
+    public Map<Carta, Button> getCartaBotonMap() {
+        return cartaBotonMap;
+    }
+     public void setCartasHabilitadas(boolean estado) {
+    this.cartasHabilitadas = estado;
+}
+     private void registrarEventoEnArchivo(String tipo, String descripcion) {
+    try {
+        java.io.FileWriter writer = new java.io.FileWriter("registro_eventos.txt", true);
+        writer.write(tipo + ": " + descripcion + "\n");
+        writer.close();
+    } catch (java.io.IOException e) {
+        e.printStackTrace();
     }
 }
+     
+
+    public void mezclarCartasNoEmparejadasVisual(List<Carta> noEmparejadas) {
+        // Mezclar la lista
+        Collections.shuffle(noEmparejadas);
+        // Quitar todas las cartas no emparejadas del grid
+        for (Carta carta : noEmparejadas) {
+            Button boton = cartaBotonMap.get(carta);
+            if (boton != null) {
+                StackPane celda = (StackPane) boton.getParent();
+                if (celda != null) {
+                    GridPane grid = (GridPane) celda.getParent();
+                    if (grid != null) {
+                        grid.getChildren().remove(celda);
+                    }
+                }
+            }
+        }
+        // Volver a agregarlas en nuevas posiciones
+        int index = 0;
+        for (int fila = 0; fila < dificultad.filas; fila++) {
+            for (int col = 0; col < dificultad.columnas; col++) {
+                if (index >= cartas.size()) break;
+                Carta carta = cartas.get(index);
+                if (!carta.isColocada() && noEmparejadas.contains(carta)) {
+                    Button boton = cartaBotonMap.get(carta);
+                    if (boton != null) {
+                        StackPane celda = (StackPane) boton.getParent();
+                        if (celda != null) {
+                            tablero.add(celda, col, fila);
+                        }
+                    }
+                }
+                index++;
+            }
+        }
+    }
+
+
+}
+
+
 
