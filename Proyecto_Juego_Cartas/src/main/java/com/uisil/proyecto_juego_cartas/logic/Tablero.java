@@ -192,7 +192,7 @@ public class Tablero {
                "-fx-border-color: black;");
 
         boton.setOnAction(e -> {
-        if (esperando || carta.isBocaArriba() || carta.isColocada()) return;
+        if (!cartasHabilitadas || esperando || carta.isBocaArriba() || carta.isColocada()) return;
 
         carta.setBocaArriba(true);
         boton.setStyle("-fx-background-image: url('" + imagenCartaURL + "'); " +
@@ -327,6 +327,7 @@ public Map<Carta, Button> getCartaBotonMap() {
     }
     public void setCartasHabilitadas(boolean estado) {
     this.cartasHabilitadas = estado;
+    
 }
     public int getPuntos() {
     return puntos;
