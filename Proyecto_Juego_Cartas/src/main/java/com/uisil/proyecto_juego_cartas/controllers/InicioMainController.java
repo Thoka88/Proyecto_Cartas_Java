@@ -13,6 +13,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
@@ -21,12 +22,18 @@ import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
+import javafx.animation.Timeline;
+import javafx.animation.KeyFrame;
+import javafx.util.Duration;
 
 public class InicioMainController {
        private MediaPlayer mediaPlayer;
 
     @FXML
     private TextField txtNombreJugador;
+    
+    @FXML
+    private Label lblMensaje;
 
     @FXML
     public void iniciarFacil() {
@@ -66,8 +73,8 @@ public class InicioMainController {
     private void iniciarJuego(Dificultad dificultad) {
         detenerMusica();
         String nombre = txtNombreJugador.getText();
-        if (nombre == null || nombre.isEmpty()) {
-            System.out.println("Completa el campo de nombre.");
+        if (nombre == null || nombre.trim().isEmpty()) {
+            mostrarMensaje("Por favor, completa el campo de nombre.");
             return;
         }
         try {
@@ -82,6 +89,14 @@ public class InicioMainController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    public void mostrarMensaje(String mensaje) {
+        lblMensaje.setText(mensaje);
+        lblMensaje.setVisible(true);
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(3), e -> lblMensaje.setVisible(false)));
+        timeline.setCycleCount(1);
+        timeline.play();
     }
    
 @FXML
@@ -125,6 +140,8 @@ public void initialize() {
             mediaPlayer.pause();
         }
     });
+    
+
 }
 public VBox crearPanelAjustes() {
     if (panelAjustes != null) return panelAjustes;
