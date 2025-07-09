@@ -53,8 +53,15 @@ public class InicioMainController {
     
     @FXML
     private AnchorPane rootAnchorPane;
+    
+    public void detenerMusica() {
+    if (mediaPlayer != null) {
+        mediaPlayer.stop(); // Detiene y libera recursos
+    }
+}
 
     private void iniciarJuego(Dificultad dificultad) {
+        detenerMusica();
         String nombre = txtNombreJugador.getText();
         if (nombre == null || nombre.isEmpty()) {
             System.out.println("Completa el campo de nombre.");
