@@ -6,29 +6,22 @@ package com.uisil.proyecto_juego_cartas.logic;
 
 import com.uisil.proyecto_juego_cartas.model.Carta;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
-/**
- *
- * @author Yordi
- */
 public class Juego {
     private int tiempoRestante; // en segundos
     private int puntajeJugador;
     private int turnosRestriccionUnaCarta;
-    private List<Carta> cartasNoEmparejadas;
     private Tablero tablero;
+    private boolean puntosDoblesActivos = false;
 
     public Juego() {
         this.tiempoRestante = 60; // ejemplo de tiempo inicial
         this.puntajeJugador = 0;
         this.turnosRestriccionUnaCarta = 0;
-        this.cartasNoEmparejadas = new ArrayList<>();
-        // aquí podrías inicializar cartasNoEmparejadas con cartas
     }
 
-    // Resta tiempo en segundos al temporizador, no menor a 0
     public void restarTiempo(int segundos) {
         tiempoRestante -= segundos;
         if (tiempoRestante < 0) {
@@ -37,7 +30,6 @@ public class Juego {
         System.out.println("Tiempo restante: " + tiempoRestante + " segundos");
     }
 
-    // Resta puntos, no menor a 0
     public void restarPuntos(int puntos) {
         puntajeJugador -= puntos;
         if (puntajeJugador < 0) {
@@ -46,37 +38,25 @@ public class Juego {
         System.out.println("Puntaje actual: " + puntajeJugador);
     }
 
-    // Activa la restricción para mostrar solo una carta por turno durante n turnos
     public void activarRestriccionUnaCarta(int turnos) {
         this.turnosRestriccionUnaCarta = turnos;
         System.out.println("Restricción de una carta por turno activada por " + turnos + " turnos.");
     }
 
-    // Mezcla las cartas no emparejadas
     public void mezclarCartasNoEmparejadas() {
-        Collections.shuffle(cartasNoEmparejadas);
+        List<Carta> noEmparejadas = getCartasNoEmparejadas();
+        Collections.shuffle(noEmparejadas);
         System.out.println("Cartas no emparejadas mezcladas.");
-    }
-
-    public void setTiempoRestante(int tiempoRestante) {
-        this.tiempoRestante = tiempoRestante;
-    }
-
-    // Getters para pruebas o para otras clases
-    public int getTiempoRestante() {
-        return tiempoRestante;
-    }
-
-    public int getPuntajeJugador() {
-        return puntajeJugador;
-    }
-
-    public int getTurnosRestriccionUnaCarta() {
-        return turnosRestriccionUnaCarta;
+        if (tablero != null) {
+            tablero.mezclarCartasNoEmparejadasVisual(noEmparejadas);
+        }
     }
 
     public List<Carta> getCartasNoEmparejadas() {
-        return cartasNoEmparejadas;
+        if (tablero == null) return List.of();
+        return tablero.getCartas().stream()
+            .filter(c -> !c.isColocada())
+            .collect(Collectors.toList());
     }
 
     public void setTablero(Tablero tablero) {
@@ -87,12 +67,37 @@ public class Juego {
         return tablero;
     }
 
-    // Aquí podrías agregar métodos para manejar el paso de turnos y disminuir turnosRestriccionUnaCarta, etc.
+    public int getTiempoRestante() {
+        return tiempoRestante;
+    }
+    public void setTiempoRestante(int tiempoRestante) {
+        this.tiempoRestante = tiempoRestante;
+    }
+
+    public int getPuntajeJugador() {
+        return puntajeJugador;
+    }
+
+    public int getTurnosRestriccionUnaCarta() {
+        return turnosRestriccionUnaCarta;
+    }
+
+    public boolean isPuntosDoblesActivos() {
+        return puntosDoblesActivos;
+    }
+
+    public void activarPuntosDobles() {
+        puntosDoblesActivos = true;
+    }
+
+    public void desactivarPuntosDobles() {
+        puntosDoblesActivos = false;
+    }
 
     public void emparejarCartas(Carta c1, Carta c2) {
         c1.colocar();
         c2.colocar();
-        cartasNoEmparejadas.remove(c1);
-        cartasNoEmparejadas.remove(c2);
     }
+    
 }
+

@@ -76,10 +76,10 @@ public class Tablero {
         switch (dificultad) {
             case FACIL:
                 bonusDisponibles = Arrays.asList(CartaBonus.TipoBonus.MAS_CINCO_SEG);
-                penalDisponibles = Arrays.asList(CartaPenalizacion.TipoPenalizacion.MENOS_CINCO_SEG);
+                penalDisponibles = Arrays.asList(CartaPenalizacion.TipoPenalizacion.VER_UNA_CARTA);
                 break;
             case MEDIO:
-                bonusDisponibles = Arrays.asList(CartaBonus.TipoBonus.MAS_CINCO_SEG, CartaBonus.TipoBonus.PUNTOS_DOBLES, CartaBonus.TipoBonus.COMODIN);
+                bonusDisponibles = Arrays.asList(CartaBonus.TipoBonus.MAS_CINCO_SEG, CartaBonus.TipoBonus.PUNTOS_DOBLES);
                 penalDisponibles = Arrays.asList(CartaPenalizacion.TipoPenalizacion.MENOS_DIEZ_SEG, CartaPenalizacion.TipoPenalizacion.VER_UNA_CARTA, CartaPenalizacion.TipoPenalizacion.MENOS_UN_PUNTO);
                 break;
             case DIFICIL:
@@ -214,7 +214,12 @@ public class Tablero {
                 // Emparejadas: marcar como colocadas
                 c1.colocar();
                 c2.colocar();
-                puntos += 10;  // o la cantidad que desees por match
+                if (juego.isPuntosDoblesActivos()) {
+                puntos += 20;
+                juego.desactivarPuntosDobles(); // Aplica solo una vez
+}               else {
+                puntos += 10;
+                }  // o la cantidad que desees por match
                 mainController.actualizarPuntaje(puntos);  // Mostrarlo en pantalla
 
                 // Si son cartas Bonus o Penalización, aplicar efecto
@@ -331,6 +336,54 @@ public Map<Carta, Button> getCartaBotonMap() {
 }
     public int getPuntos() {
     return puntos;
+}
+public void mostrarParejaTemporal() {
+    System.out.println("🔍 Activando mostrarParejaTemporal()");
+    List<Carta> disponibles = new ArrayList<>(juego.getCartasNoEmparejadas());
+    System.out.println("Cartas no emparejadas disponibles: " + disponibles.size());
+    
+    if (disponibles.size() < 2) return;
+
+    Carta c1 = null, c2 = null;
+    Collections.shuffle(disponibles);
+    for (int i = 0; i < disponibles.size(); i++) {
+        for (int j = i + 1; j < disponibles.size(); j++) {
+            if (disponibles.get(i).getId() == disponibles.get(j).getId()) {
+                c1 = disponibles.get(i);
+                c2 = disponibles.get(j);
+                break;
+            }
+        }
+        if (c1 != null) break;
+    }
+
+    if (c1 == null || c2 == null) {
+        System.out.println("❌    No se encontró pareja.");
+        return;
+    }
+
+    System.out.println("🎴 Pareja seleccionada: " + c1.getId());
+
+    c1.setBocaArriba(true);
+    c2.setBocaArriba(true);
+    voltearVisualmenteCarta(c1, true);
+    voltearVisualmenteCarta(c2, true);
+    mostrarMensajeBonus("¡Se reveló una pareja al azar!");
+
+    Carta finalC1 = c1;
+    Carta finalC2 = c2;
+
+    PauseTransition pausa = new PauseTransition(Duration.seconds(1.5));
+    pausa.setOnFinished(e -> {
+        System.out.println("⏳ Ocultando pareja...");
+        javafx.application.Platform.runLater(() -> {
+            finalC1.setBocaArriba(false);
+            finalC2.setBocaArriba(false);
+            voltearVisualmenteCarta(finalC1, false);
+            voltearVisualmenteCarta(finalC2, false);
+        });
+    });
+    pausa.play();
 }
 
      

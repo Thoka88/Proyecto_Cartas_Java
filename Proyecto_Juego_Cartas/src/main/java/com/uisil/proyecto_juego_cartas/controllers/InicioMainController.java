@@ -54,6 +54,9 @@ public class InicioMainController {
     @FXML
     private AnchorPane rootAnchorPane;
     
+    @FXML
+    private Button btnSalir;
+    
     public void detenerMusica() {
     if (mediaPlayer != null) {
         mediaPlayer.stop(); // Detiene y libera recursos
@@ -91,6 +94,12 @@ private void mostrarPanelAjustes() {
 @FXML
 private void ocultarPanelAjustes() {
     panelAjustes.setVisible(false);
+}
+
+@FXML
+public void salirJuego(){
+System.exit(0);
+
 }
 @FXML
 public void initialize() {
