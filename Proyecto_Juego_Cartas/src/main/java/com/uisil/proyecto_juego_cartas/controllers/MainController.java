@@ -106,6 +106,7 @@ public class MainController {
         iniciarTemporizador(dificultad);
 
         btnReanudar.setDisable(true);  // Por defecto, está deshabilitado
+        
 
     }
 
