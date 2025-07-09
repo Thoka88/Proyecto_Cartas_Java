@@ -38,10 +38,6 @@ public class CartaPenalizacion extends Carta {
                 juego.restarTiempo(10);
                 if (tablero != null) tablero.mostrarMensajePenalizacion("¡Perdiste 10 segundos!");
                 break;
-            case VER_UNA_CARTA:
-                juego.activarRestriccionUnaCarta(2);
-                if (tablero != null) tablero.mostrarMensajePenalizacion("¡Solo puedes ver una carta por turno durante 2 turnos!");
-                break;
             case MENOS_TREINTA_SEG:
                 juego.restarTiempo(30);
                 if (tablero != null) tablero.mostrarMensajePenalizacion("¡Perdiste 30 segundos!");

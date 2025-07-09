@@ -82,6 +82,9 @@ public class MainController {
     @FXML 
     private BorderPane rootBorderPane;
     
+    @FXML
+    private Button btnSalir;
+    
 
     private Timeline temporizador;
     private boolean juegoPausado = false;
@@ -356,6 +359,11 @@ public void initialize() {
             mediaPlayer.pause();
         }
     });
+}
+@FXML
+public void salirJuego(){
+System.exit(0);
+
 }
 }
 
