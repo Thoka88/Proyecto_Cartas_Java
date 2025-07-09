@@ -24,13 +24,21 @@ import com.uisil.proyecto_juego_cartas.model.CartaBonus;
 import com.uisil.proyecto_juego_cartas.model.CartaPenalizacion;
 import java.io.FileReader;
 import java.io.FileWriter;
-
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Slider;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
+//import javax.print.attribute.standard.Media;
 
 public class MainController {
     private Juego juego; // Referencia al juego
@@ -58,12 +66,29 @@ public class MainController {
 
     @FXML
     private Button btnGuardar;
+    
+    @FXML 
+    private VBox panelAjustes;
+    
+    @FXML 
+    private Button btnAjustes;
+    
+    @FXML 
+    private Slider sliderVolumen;
+    
+    @FXML 
+    private CheckBox chkMusica;
+    
+    @FXML 
+    private BorderPane rootBorderPane;
+    
 
     private Timeline temporizador;
     private boolean juegoPausado = false;
     private int tiempoRestante;
     private Tablero tablero;
     private String nombreJugador;
+    private MediaPlayer mediaPlayer;
 
     public void setStage(Stage stage) {
         this.stage = stage;
@@ -222,6 +247,15 @@ private void cargarPartidaJson() {
         }
     }
 }
+    @FXML
+    private void mostrarPanelAjustes() {
+        panelAjustes.setVisible(true);
+}
+
+    @FXML
+    private void ocultarPanelAjustes() {
+        panelAjustes.setVisible(false);
+}
 
     @FXML
     private void pausarJuego() {
@@ -272,6 +306,56 @@ private void cargarPartidaJson() {
     }
 }
 
+   
+
+public VBox crearPanelAjustes() {
+    if (panelAjustes != null) return panelAjustes;
+
+    Slider sliderVolumen = new Slider(0, 100, 50);
+    sliderVolumen.setShowTickLabels(true);
+    sliderVolumen.setShowTickMarks(true);
+    sliderVolumen.setMajorTickUnit(25);
+
+    CheckBox chkMusica = new CheckBox("Activar Música");
+    chkMusica.setSelected(true);
+
+    Button btnCerrar = new Button("Cerrar Ajustes");
+    btnCerrar.setOnAction(e -> panelAjustes.setVisible(false));
+
+    panelAjustes = new VBox(15, sliderVolumen, chkMusica, btnCerrar);
+    panelAjustes.setPadding(new Insets(20));
+    panelAjustes.setStyle("-fx-background-color: rgba(0, 0, 0, 0.85); -fx-background-radius: 10;");
+    panelAjustes.setVisible(false);
+    panelAjustes.setMaxWidth(300);
+    StackPane.setAlignment(panelAjustes, Pos.CENTER);
+
+    return panelAjustes;
+}
+@FXML
+public void initialize() {
+    // Ruta al archivo de audio dentro de resources
+    String ruta = getClass().getResource("/audio/SoundTrack_Main.mp3").toExternalForm();
+    Media media = new Media(ruta);
+    mediaPlayer = new MediaPlayer(media);
+    mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE); // Para que se repita
+    mediaPlayer.play();
+
+    // Configurar volumen desde el slider
+    sliderVolumen.valueProperty().addListener((obs, oldVal, newVal) -> {
+        if (mediaPlayer != null) {
+            mediaPlayer.setVolume(newVal.doubleValue() / 100.0); // Valor entre 0 y 1
+        }
+    });
+
+    // Música activada/desactivada
+    chkMusica.selectedProperty().addListener((obs, oldVal, newVal) -> {
+        if (newVal) {
+            mediaPlayer.play();
+        } else {
+            mediaPlayer.pause();
+        }
+    });
+}
 }
 
 
