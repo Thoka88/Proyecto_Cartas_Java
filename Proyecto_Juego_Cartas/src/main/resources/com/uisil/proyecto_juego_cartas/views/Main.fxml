@@ -1,38 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.uisil.proyecto_juego_cartas.controllers.MainController"
-            prefWidth="800" prefHeight="600">
+<StackPane xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.uisil.proyecto_juego_cartas.controllers.MainController"
+           prefWidth="800" prefHeight="600">
 
-    <top>
+    <children>
 
-        <VBox alignment="CENTER_LEFT" spacing="10">
-            <padding>
-                <Insets top="15" right="15" bottom="15" left="15"/>
-            </padding>
+        <BorderPane fx:id="rootBorderPane">
+            <top>
+                <VBox alignment="CENTER_LEFT" spacing="10">
+                    <padding>
+                        <Insets top="15" right="15" bottom="15" left="15"/>
+                    </padding>
 
-             <Label fx:id="lblMensaje" text="" style="-fx-font-size: 18px; -fx-text-fill: #d35400;" visible="false" />
+                    <Label fx:id="lblMensaje" text="" style="-fx-font-size: 18px; -fx-text-fill: #d35400;" visible="false" />
 
-            <HBox spacing="20" alignment="CENTER_LEFT">
-                <Label fx:id="lblJugador" text="Jugador: " style="-fx-font-size: 16px;" />
-                <Label fx:id="lblTiempo" text="Tiempo: 0s" style="-fx-font-size: 16px;" />
-                <Label fx:id="lblPuntaje" text="Puntos: 0" style="-fx-font-size: 16px;" />
-                <Button fx:id="btnPausar" text="Pausar" onAction="#pausarJuego"/>
-                <Button fx:id="btnReanudar" text="Reanudar" onAction="#reanudarJuego" disable="true"/>
-                <Button fx:id="btnGuardar" text="Guardar Partida" onAction="#guardarPartida"/>
-                <Button fx:id="btnGuardarJson" text="Guardar Proceso (JSON)" onAction="#guardarPartidaJson" />
-                <Button fx:id="btnCargarJson" text="Cargar Proceso (JSON)" onAction="#cargarPartidaJson" />
+                    <HBox spacing="20" alignment="CENTER_LEFT">
+                        <Label fx:id="lblJugador" text="Jugador: " style="-fx-font-size: 16px;" />
+                        <Label fx:id="lblTiempo" text="Tiempo: 0s" style="-fx-font-size: 16px;" />
+                        <Label fx:id="lblPuntaje" text="Puntos: 0" style="-fx-font-size: 16px;" />
+                        <Button fx:id="btnPausar" text="Pausar" onAction="#pausarJuego"/>
+                        <Button fx:id="btnReanudar" text="Reanudar" onAction="#reanudarJuego" disable="true"/>
+                        <Button fx:id="btnGuardarJson" text="Guardar Proceso (JSON)" onAction="#guardarPartidaJson" />
+                        <Button fx:id="btnCargarJson" text="Cargar Proceso (JSON)" onAction="#cargarPartidaJson" />
+                        <Button fx:id="btnAjustes" text="⚙ Ajustes"  onAction="#mostrarPanelAjustes"/>
+                    </HBox>
+                </VBox>
+            </top>
 
-            </HBox>
-        </VBox>
-    </top>
+            <center>
+                <VBox fx:id="contenedorJuego" spacing="10" alignment="CENTER"/>
+            </center>
+        </BorderPane>
 
-    <center>
-        <VBox fx:id="contenedorJuego" spacing="10" alignment="CENTER"/>
-    </center>
+        <!-- Panel de ajustes oculto por defecto -->
+        <VBox fx:id="panelAjustes"
+      alignment="CENTER"
+      spacing="15"
+      maxWidth="300" prefWidth="300"
+      maxHeight="200" prefHeight="200"
+      visible="false"
+      style="-fx-background-color: rgba(0,0,0,0.85); -fx-background-radius: 10; -fx-padding: 20;">
+      
+    <Label text="Ajustes" style="-fx-text-fill: white; -fx-font-size: 18px;" />
+    <Slider fx:id="sliderVolumen" min="0" max="100" value="50"/>
+    <CheckBox fx:id="chkMusica" text="Activar Música" selected="true"/>
+    <Button text="Cerrar" onAction="#ocultarPanelAjustes"/>
+</VBox>
 
-</BorderPane>
+    </children>
+</StackPane>
