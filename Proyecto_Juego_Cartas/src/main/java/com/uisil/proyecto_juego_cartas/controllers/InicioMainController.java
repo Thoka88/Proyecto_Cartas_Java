@@ -68,7 +68,7 @@ public class InicioMainController {
     if (mediaPlayer != null) {
         mediaPlayer.stop(); // Detiene y libera recursos
     }
-}
+    }
 
     private void iniciarJuego(Dificultad dificultad) {
         detenerMusica();
