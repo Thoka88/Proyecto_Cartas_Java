@@ -18,8 +18,16 @@ public class App extends Application {
 
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("/com/uisil/proyecto_juego_cartas/views/InicioMain.fxml"));
         Parent root = fxmlLoader.load();
+        
+        System.out.println(App.class.getResource("/com/uisil/proyecto_juego_cartas/estilos/Inicio.css"));
 
         Scene scene = new Scene(root, 640, 480); // ✅ declarar la variable
+            // Cargar fuente personalizada
+        javafx.scene.text.Font.loadFont(App.class.getResourceAsStream("/com/uisil/proyecto_juego_cartas/fonts/Minecraft.ttf"), 16);
+
+        // Agregar hoja de estilo Minecraft
+        scene.getStylesheets().add(App.class.getResource("/estilos/Inicio.css").toExternalForm());
+        
         stage.setScene(scene);
         stage.setTitle("Pantalla de Inicio");
         stage.show();

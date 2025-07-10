@@ -10,8 +10,7 @@ import com.uisil.proyecto_juego_cartas.logic.Tablero;
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
-import javafx.animation.PauseTransition;
-import javafx.util.Duration;
+
 
 /**
  *
