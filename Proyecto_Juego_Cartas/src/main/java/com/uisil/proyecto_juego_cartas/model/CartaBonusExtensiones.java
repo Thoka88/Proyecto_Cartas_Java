@@ -25,11 +25,4 @@ public class CartaBonusExtensiones extends Carta {
         this.doblePuntos = doblePuntos;
     }
 
-    public boolean isEsComodin() {
-        return esComodin;
-    }
-
-    public void setEsComodin(boolean esComodin) {
-        this.esComodin = esComodin;
-    }
 }
