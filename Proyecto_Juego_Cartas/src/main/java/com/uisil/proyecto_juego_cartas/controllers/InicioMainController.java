@@ -24,9 +24,11 @@ import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import javafx.animation.Timeline;
 import javafx.animation.KeyFrame;
+import javafx.animation.PauseTransition;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 import javafx.scene.paint.Color;
+import javafx.scene.media.AudioClip;
 
 public class InicioMainController {
        private MediaPlayer mediaPlayer;
@@ -66,16 +68,19 @@ public class InicioMainController {
 
     @FXML
     public void iniciarFacil() {
+        reproducirSonidoBoton();
         iniciarJuego(Dificultad.FACIL);
     }
 
     @FXML
     public void iniciarMedio() {
+        reproducirSonidoBoton();
         iniciarJuego(Dificultad.MEDIO);
     }
 
     @FXML
     public void iniciarDificil() {
+        reproducirSonidoBoton();
         iniciarJuego(Dificultad.DIFICIL);
     }
     @FXML 
@@ -119,6 +124,14 @@ public class InicioMainController {
         }
     }
     
+    
+
+private void reproducirSonidoBoton() {
+    String rutaSonido = getClass().getResource("/audio/sonido_click.mp3").toExternalForm();
+    AudioClip sonido = new AudioClip(rutaSonido);
+    sonido.play();
+}
+    
     public void mostrarMensaje(String mensaje) {
         lblMensaje.setText(mensaje);
         lblMensaje.setVisible(true);
@@ -129,6 +142,7 @@ public class InicioMainController {
    
 @FXML
 private void mostrarPanelAjustes() {
+     reproducirSonidoBoton();
     centrarPanel();
     panelAjustes.toFront(); // Asegura que esté al frente
     panelAjustes.setVisible(true);
@@ -136,13 +150,17 @@ private void mostrarPanelAjustes() {
 
 @FXML
 private void ocultarPanelAjustes() {
+     reproducirSonidoBoton();
     panelAjustes.setVisible(false);
 }
 
 @FXML
-public void salirJuego(){
-System.exit(0);
+public void salirJuego() {
+    reproducirSonidoBoton();
 
+    PauseTransition delay = new PauseTransition(Duration.millis(30));
+    delay.setOnFinished(e -> System.exit(0));
+    delay.play();
 }
 @FXML
 public void initialize() {
