@@ -24,7 +24,9 @@ import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import javafx.animation.Timeline;
 import javafx.animation.KeyFrame;
+import javafx.scene.text.Font;
 import javafx.util.Duration;
+import javafx.scene.paint.Color;
 
 public class InicioMainController {
        private MediaPlayer mediaPlayer;
@@ -34,6 +36,33 @@ public class InicioMainController {
     
     @FXML
     private Label lblMensaje;
+    
+    @FXML
+    private Label lblTitulo;
+    
+    @FXML
+    private Label lblDificultad;
+    
+    @FXML
+    private Label lblAjuste;
+    
+     @FXML
+    private Button btnFacil;
+     
+      @FXML
+    private Button btnMedio;
+      
+       @FXML
+    private Button btnDificil;
+       
+       @FXML
+    private Button btnAjustes;
+       
+       @FXML
+    private Button btnSalir;
+       
+        @FXML
+    private Button btnCerrar;
 
     @FXML
     public void iniciarFacil() {
@@ -61,8 +90,7 @@ public class InicioMainController {
     @FXML
     private AnchorPane rootAnchorPane;
     
-    @FXML
-    private Button btnSalir;
+    
     
     public void detenerMusica() {
     if (mediaPlayer != null) {
@@ -119,11 +147,27 @@ System.exit(0);
 @FXML
 public void initialize() {
     // Ruta al archivo de audio dentro de resources
+    Font minecraftFont = Font.loadFont(getClass().getResource("/fonts/MinecraftRegular.otf").toExternalForm(), 30);
+    lblTitulo.setFont(new Font("Minecraft", 30));
+    lblMensaje.setFont(new Font("Minecraft", 30));
+    lblDificultad.setFont(new Font("Minecraft", 25));
+    lblAjuste.setFont(minecraftFont); 
+    lblAjuste.setTextFill(Color.WHITE);
+    btnFacil.setFont(new Font("Minecraft", 25));
+    btnMedio.setFont(new Font("Minecraft", 25));
+    btnDificil.setFont(new Font("Minecraft", 25));
+    btnAjustes.setFont(new Font("Minecraft", 23));
+    btnSalir.setFont(new Font("Minecraft", 25));
+    btnCerrar.setFont(new Font("Minecraft", 18));
+    chkMusica.setFont(new Font("Minecraft", 18));
+    chkMusica.setTextFill(Color.WHITE);
+    
     String ruta = getClass().getResource("/audio/SoundTrack_InicioMain.mp3").toExternalForm();
     Media media = new Media(ruta);
     mediaPlayer = new MediaPlayer(media);
     mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE); // Para que se repita
     mediaPlayer.play();
+    
 
     // Configurar volumen desde el slider
     sliderVolumen.valueProperty().addListener((obs, oldVal, newVal) -> {
@@ -159,7 +203,7 @@ public VBox crearPanelAjustes() {
 
     panelAjustes = new VBox(15, sliderVolumen, chkMusica, btnCerrar);
     panelAjustes.setPadding(new Insets(20));
-    panelAjustes.setStyle("-fx-background-color: rgba(0, 0, 0, 0.85); -fx-background-radius: 10;");
+    panelAjustes.setStyle("-fx-background-color: rgba(255, 0, 0, 0); -fx-background-radius: 10;");
     panelAjustes.setVisible(false);
     panelAjustes.setMaxWidth(300);
     StackPane.setAlignment(panelAjustes, Pos.CENTER);

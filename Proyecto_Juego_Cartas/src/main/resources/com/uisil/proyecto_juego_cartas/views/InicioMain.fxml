@@ -8,36 +8,58 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="rootAnchorPane" prefHeight="480" prefWidth="640" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.uisil.proyecto_juego_cartas.controllers.InicioMainController">
 
     <VBox alignment="CENTER" spacing="20" AnchorPane.bottomAnchor="50" AnchorPane.leftAnchor="50" AnchorPane.rightAnchor="50" AnchorPane.topAnchor="50">
         
-        <Label text="Nombre del Jugador:" />
+        <Label fx:id="lblTitulo" text="Nombre del Jugador:" >
+         <font>
+            <Font size="18.0" />
+         </font></Label>
         <TextField fx:id="txtNombreJugador" maxWidth="300" promptText="Ingresa tu nombre" />
         
-        <Label fx:id="lblMensaje" text="" style="-fx-font-size: 16px; -fx-text-fill: #e74c3c;" visible="false"/>
+        <Label fx:id="lblMensaje" style="-fx-font-size: 16px; -fx-text-fill: #e74c3c;" text="" visible="false" />
 
-        <Label text="Seleccionar dificultad:" />
+        <Label fx:id="lblDificultad" text="Seleccionar dificultad:">
+         <font>
+            <Font size="24.0" />
+         </font></Label>
         <HBox alignment="CENTER" spacing="10">
-            <Button onAction="#iniciarFacil" prefHeight="40.0" prefWidth="300.0" text="Fácil" />
+            <Button fx:id="btnFacil" onAction="#iniciarFacil" prefHeight="40.0" prefWidth="325.0" text="Fácil">
+            <font>
+               <Font size="18.0" />
+            </font></Button>
         </HBox>
         <HBox alignment="CENTER" spacing="10">
-            <Button onAction="#iniciarMedio" prefHeight="40.0" prefWidth="300.0" text="Medio" />
+            <Button fx:id="btnMedio" onAction="#iniciarMedio" prefHeight="40.0" prefWidth="325.0" text="Medio">
+            <font>
+               <Font size="18.0" />
+            </font></Button>
         </HBox>
         <HBox alignment="CENTER" spacing="10">
-            <Button onAction="#iniciarDificil" prefHeight="40.0" prefWidth="300.0" text="Difícil" />
+            <Button fx:id="btnDificil" onAction="#iniciarDificil" prefHeight="40.0" prefWidth="325.0" text="Difícil">
+            <font>
+               <Font size="18.0" />
+            </font></Button>
         </HBox>
         <HBox alignment="CENTER" spacing="10">
-            <Button fx:id="btnAjustesInicio" onAction="#mostrarPanelAjustes" prefHeight="40.0" prefWidth="145.0" text="⚙ Ajustes" />
-         <Button fx:id="btn_salir" onAction="#salirJuego" prefHeight="40.0" prefWidth="145.0" text="Salir del juego" />
+            <Button fx:id="btnAjustes" onAction="#mostrarPanelAjustes" prefHeight="40.0" prefWidth="157.0" text="Ajustes">
+            <font>
+               <Font size="18.0" />
+            </font></Button>
+         <Button fx:id="btnSalir" onAction="#salirJuego" prefHeight="40.0" prefWidth="157.0" text="Salir">
+            <font>
+               <Font size="18.0" />
+            </font></Button>
         </HBox>
     </VBox>
     <VBox fx:id="panelAjustes" alignment="CENTER" layoutX="170" layoutY="140" maxHeight="200" maxWidth="300" prefHeight="200" prefWidth="300" spacing="15" style="-fx-background-color: rgba(0,0,0,0.85); -fx-background-radius: 10; -fx-padding: 20;" visible="false">
-            <Label style="-fx-text-fill: white; -fx-font-size: 18px;" text="Ajustes" />
+            <Label fx:id="lblAjuste"  text="Ajustes" />
             <Slider fx:id="sliderVolumen" max="100" min="0" value="50" />
             <CheckBox fx:id="chkMusica" selected="true" text="Activar Música" />
-            <Button onAction="#ocultarPanelAjustes" text="Cerrar" />
+            <Button fx:id="btnCerrar" onAction="#ocultarPanelAjustes" text="Cerrar" />
         </VBox>
     
 

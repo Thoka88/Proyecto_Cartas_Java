@@ -23,10 +23,10 @@ public class App extends Application {
 
         Scene scene = new Scene(root, 640, 480); // ✅ declarar la variable
             // Cargar fuente personalizada
-        javafx.scene.text.Font.loadFont(App.class.getResourceAsStream("/com/uisil/proyecto_juego_cartas/fonts/Minecraft.ttf"), 16);
+        //javafx.scene.text.Font.loadFont(App.class.getResourceAsStream("/fonts/MinecraftRegular.oft"), 50);
 
         // Agregar hoja de estilo Minecraft
-        scene.getStylesheets().add(App.class.getResource("/estilos/Inicio.css").toExternalForm());
+        scene.getStylesheets().add(App.class.getResource("/estilos/Styles.css").toExternalForm());
         
         stage.setScene(scene);
         stage.setTitle("Pantalla de Inicio");
