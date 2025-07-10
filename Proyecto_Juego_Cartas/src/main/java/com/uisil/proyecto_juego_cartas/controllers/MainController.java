@@ -27,7 +27,6 @@ import java.io.FileWriter;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +37,11 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
-//import javax.print.attribute.standard.Media;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import java.io.IOException;
+
 
 public class MainController {
     private Juego juego; // Referencia al juego
@@ -64,6 +67,9 @@ public class MainController {
     @FXML
     private Button btnReanudar;
 
+    @FXML
+    private Button btnInicio;
+    
     @FXML
     private Button btnGuardar;
     
@@ -145,6 +151,7 @@ public class MainController {
                 if (tiempoRestante <= 0) {
                     temporizador.stop();
                     lblTiempo.setText("¡Tiempo agotado!");
+                    mostrarMensaje("El juego ha terminado");
                     tablero.setCartasHabilitadas(false);
                     btnPausar.setDisable(true);
                     btnReanudar.setDisable(true);
@@ -365,6 +372,33 @@ public void salirJuego(){
 System.exit(0);
 
 }
+
+    public void detenerMusica() {
+    if (mediaPlayer != null) {
+        mediaPlayer.stop(); // Detiene y libera recursos
+    }
+    }
+    @FXML
+    private void volverAlInicio() {
+        // Detener el temporizador si está activo
+        if (temporizador != null) {
+            temporizador.stop();
+        }
+
+        // Crear y mostrar la ventana de inicio
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/uisil/proyecto_juego_cartas/views/InicioMain.fxml"));
+            Parent root = loader.load();
+            detenerMusica();
+
+            Stage stage = (Stage) btnInicio.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Juego de Cartas - Inicio");
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
 
 
