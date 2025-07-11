@@ -20,6 +20,10 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import static com.uisil.proyecto_juego_cartas.logic.Dificultad.DIFICIL;
+import static com.uisil.proyecto_juego_cartas.logic.Dificultad.FACIL;
+import static com.uisil.proyecto_juego_cartas.logic.Dificultad.MEDIO;
+import com.uisil.proyecto_juego_cartas.logic.Repeticion;
 import com.uisil.proyecto_juego_cartas.model.CartaBonus;
 import com.uisil.proyecto_juego_cartas.model.CartaPenalizacion;
 import java.io.FileReader;
@@ -41,6 +45,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import java.io.IOException;
+import java.util.Arrays;
 
 
 public class MainController {
@@ -119,7 +124,7 @@ public class MainController {
 
     }
 
-    private void iniciarTemporizador(Dificultad dificultad) {
+   private void iniciarTemporizador(Dificultad dificultad) {
         switch (dificultad) {
             case FACIL:
                 tiempoRestante = 50;
@@ -163,6 +168,8 @@ public class MainController {
         temporizador.setCycleCount(tiempoRestante);
         temporizador.play();
     }
+    
+    
     public void mostrarMensaje(String mensaje) {
         lblMensaje.setText(mensaje);
         lblMensaje.setVisible(true);
@@ -316,6 +323,9 @@ private void cargarPartidaJson() {
         System.out.println("Guardado cancelado.");
     }
 }
+    public Repeticion obtenerRepeticionGuardada() {
+    return tablero.getUltimaRepeticion();
+}
 
    
 
@@ -379,26 +389,99 @@ System.exit(0);
     }
     }
     @FXML
-    private void volverAlInicio() {
-        // Detener el temporizador si está activo
-        if (temporizador != null) {
-            temporizador.stop();
+private void volverAlInicio() {
+    // Detener temporizador y música
+    if (temporizador != null) {
+        temporizador.stop();
+    }
+    detenerMusica();
+
+    // Guardar repetición solo si hay movimientos
+    if (tablero != null && !tablero.getMovimientosRealizados().isEmpty()) {
+        // Crear copia defensiva de la estructura de cartas
+        Carta[][] estructuraCopia = new Carta[tablero.getDificultad().filas][tablero.getDificultad().columnas];
+        for (int i = 0; i < tablero.getEstructuraCartas().length; i++) {
+            estructuraCopia[i] = Arrays.copyOf(tablero.getEstructuraCartas()[i], tablero.getEstructuraCartas()[i].length);
         }
 
-        // Crear y mostrar la ventana de inicio
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/uisil/proyecto_juego_cartas/views/InicioMain.fxml"));
-            Parent root = loader.load();
-            detenerMusica();
+        tablero.setUltimaRepeticion(new Repeticion(
+            new ArrayList<>(tablero.getMovimientosRealizados()), // Copia de la lista
+            estructuraCopia,
+            tablero.getDificultad()
+        ));
+    }
 
-            Stage stage = (Stage) btnInicio.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Juego de Cartas - Inicio");
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
+    // Cargar vista de inicio
+    try {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/uisil/proyecto_juego_cartas/views/InicioMain.fxml"));
+        Parent root = loader.load();
+        InicioMainController inicioController = loader.getController();
+        
+        // Pasar la repetición solo si existe
+        if (tablero != null && tablero.getUltimaRepeticion() != null) {
+            inicioController.setUltimaRepeticion(tablero.getUltimaRepeticion());
         }
+        
+        Stage stage = (Stage) btnInicio.getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+    } catch (IOException e) {
+        e.printStackTrace();
     }
 }
+
+private void verificarFinJuego() {
+    boolean juegoTerminado = tablero.getCartas().stream().allMatch(Carta::isColocada) || tiempoRestante <= 0;
+    
+    if (juegoTerminado) {
+        // Guardar repetición al finalizar el juego
+        if (!tablero.getMovimientosRealizados().isEmpty()) {
+            Carta[][] estructuraCopia = Arrays.stream(tablero.getEstructuraCartas())
+                                       .map(Carta[]::clone)
+                                       .toArray(Carta[][]::new);
+            
+            tablero.setUltimaRepeticion(new Repeticion(
+                new ArrayList<>(tablero.getMovimientosRealizados()),
+                estructuraCopia,
+                tablero.getDificultad()
+            ));
+        }
+        
+        // Mostrar mensaje de fin de juego
+        String mensaje = tiempoRestante <= 0 ? "¡Tiempo agotado!" : "¡Ganaste!";
+        mostrarMensaje(mensaje);
+        tablero.setCartasHabilitadas(false);
+    }
+}
+
+public void iniciarModoRepeticion(Repeticion repeticion) {
+    // Configuración inicial similar a iniciarJuego() pero para repetición
+    this.juego = new Juego();
+    this.dificultad = repeticion.getDificultad();
+    
+    lblJugador.setText("Reproduciendo partida...");
+    lblTiempo.setText("");
+    
+    // Prepara el tablero
+    tablero = new Tablero(dificultad, juego, this);
+    contenedorJuego.getChildren().clear();
+    contenedorJuego.getChildren().add(tablero.getTablero());
+    
+    // Desactiva controles innecesarios
+    btnPausar.setDisable(true);
+    btnReanudar.setDisable(true);
+    btnGuardar.setDisable(true);
+    
+    // Botón para volver
+    Button btnVolver = new Button("Volver al Inicio");
+    btnVolver.setOnAction(e -> volverAlInicio());
+    contenedorJuego.getChildren().add(btnVolver);
+    
+    // Carga y reproduce la repetición
+    tablero.reconstruirDesdeRepeticion(repeticion);
+    tablero.reproducirRepeticionVisual();
+}
+}
+
 
 
