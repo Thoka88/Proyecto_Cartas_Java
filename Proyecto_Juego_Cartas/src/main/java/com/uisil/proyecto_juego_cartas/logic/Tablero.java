@@ -185,12 +185,15 @@ public class Tablero {
     this.estructuraCartas = repeticion.getEstructuraFinal();
     this.cartas = new ArrayList<>();
     
-    // Reconstruir lista de cartas desde la estructura
+    // ✅ Forzar que todas las cartas estén inicialmente ocultas
     for (int fila = 0; fila < dificultad.filas; fila++) {
         for (int col = 0; col < dificultad.columnas; col++) {
-            cartas.add(estructuraCartas[fila][col]);
-        }
+            Carta carta = estructuraCartas[fila][col];
+            carta.setBocaArriba(false);
+            carta.setColocada(false); // si quieres que no aparezcan con opacidad 0.7
+            cartas.add(carta);
     }
+}
     
     // Reconstruir el tablero visual
     cartaBotonMap.clear();
@@ -313,26 +316,34 @@ public class Tablero {
                 botonesSeleccionados.clear();
                 esperando = false;
             } else {
-                // No hacen match: regresarlas a ocultas
-                PauseTransition pausa = new PauseTransition(Duration.seconds(0.5));
-                pausa.setOnFinished(ev -> {
-                    c1.setBocaArriba(false);
-                    c2.setBocaArriba(false);
+    // No hacen match: regresarlas a ocultas
+    PauseTransition pausa = new PauseTransition(Duration.seconds(0.5));
+    pausa.setOnFinished(ev -> {
+        c1.setBocaArriba(false);
+        c2.setBocaArriba(false);
 
-                    for (Button b : botonesSeleccionados) {
-                        b.setStyle("-fx-background-image: url('" + imagenReversoURL + "'); " +
-                            "-fx-background-size: 80% 80%; " +
-                            "-fx-background-repeat: no-repeat; " +
-                            "-fx-background-position: center center; " +
-                            "-fx-border-color: black;");
-                    }
+        for (Button b : botonesSeleccionados) {
+            b.setStyle("-fx-background-image: url('" + imagenReversoURL + "'); " +
+                "-fx-background-size: 80% 80%; " +
+                "-fx-background-repeat: no-repeat; " +
+                "-fx-background-position: center center; " +
+                "-fx-border-color: black;");
+        }
 
-                    cartasSeleccionadas.clear();
-                    botonesSeleccionados.clear();
-                    esperando = false;
-                });
-                pausa.play();
-            }
+        // ✅ Registrar el intento fallido
+        movimientosRealizados.add(new Movimiento(
+            movimientosRealizados.size() + 1,
+            c1.getFila(), c1.getColumna(),
+            c2.getFila(), c2.getColumna(),
+            false // no fue emparejado
+        ));
+
+        cartasSeleccionadas.clear();
+        botonesSeleccionados.clear();
+        esperando = false;
+    });
+    pausa.play();
+}
         }
     });
 
@@ -388,7 +399,7 @@ public class Tablero {
     public void iniciarRepeticionDesdePartida(List<Movimiento> movimientos) {
     if (movimientos == null || movimientos.isEmpty()) return;
 
-    cartasHabilitadas = false;
+    cartasHabilitadas = true;
     this.movimientosRealizados = movimientos;
 
     reproducirSiguienteMovimiento();
