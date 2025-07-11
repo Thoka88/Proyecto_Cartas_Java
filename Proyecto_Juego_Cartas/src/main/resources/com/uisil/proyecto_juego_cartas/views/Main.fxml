@@ -32,8 +32,8 @@
                         <Button fx:id="btnPausar" text="Pausar" onAction="#pausarJuego"/>
                         <Button fx:id="btnReanudar" text="Reanudar" onAction="#reanudarJuego" disable="true"/>
                         <Button fx:id="btnInicio" text="Volver al Inicio" onAction="#volverAlInicio"/>
-                        <Button fx:id="btnGuardarJson" text="Guardar Proceso (JSON)" onAction="#guardarPartidaJson" />
-                        <Button fx:id="btnCargarJson" text="Cargar Proceso (JSON)" onAction="#cargarPartidaJson" />
+                        <Button fx:id="btnGuardar" text="Guardar Proceso (JSON)" onAction="#guardarPartidaJson" />
+                        <Button fx:id="btnCargar" text="Cargar Proceso (JSON)" onAction="#cargarPartidaJson" />
                         <Button fx:id="btnAjustes" text="⚙ Ajustes"  onAction="#mostrarPanelAjustes"/>
                     </HBox>
                 </VBox>

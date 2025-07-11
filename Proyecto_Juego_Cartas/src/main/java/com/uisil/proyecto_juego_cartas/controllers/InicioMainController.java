@@ -5,6 +5,12 @@
 package com.uisil.proyecto_juego_cartas.controllers;
 
 import com.uisil.proyecto_juego_cartas.logic.Dificultad;
+import com.uisil.proyecto_juego_cartas.logic.Juego;
+import com.uisil.proyecto_juego_cartas.logic.Repeticion;
+import com.uisil.proyecto_juego_cartas.logic.Tablero;
+import com.uisil.proyecto_juego_cartas.model.Carta;
+import com.uisil.proyecto_juego_cartas.model.CartaNormal;
+import java.io.IOException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -32,6 +38,9 @@ import javafx.scene.media.AudioClip;
 
 public class InicioMainController {
        private MediaPlayer mediaPlayer;
+       private Tablero tablero;
+       private Repeticion ultimaRepeticion;
+       private Tablero tableroRepeticion;
 
     @FXML
     private TextField txtNombreJugador;
@@ -58,6 +67,9 @@ public class InicioMainController {
     private Button btnDificil;
        
        @FXML
+    private Button btnRepeticiones;
+       
+       @FXML
     private Button btnAjustes;
        
        @FXML
@@ -65,6 +77,7 @@ public class InicioMainController {
        
         @FXML
     private Button btnCerrar;
+    
 
     @FXML
     public void iniciarFacil() {
@@ -123,6 +136,13 @@ public class InicioMainController {
             e.printStackTrace();
         }
     }
+    public void setUltimaRepeticion(Repeticion rep) {
+    this.ultimaRepeticion = rep;
+}
+    public void guardarRepeticionDesdeTablero(Tablero tablero) {
+    Repeticion rep = new Repeticion(tablero.getMovimientosRealizados(), tablero.getEstructuraCartas(), tablero.getDificultad());
+    setUltimaRepeticion(rep);
+}
     
     
 
@@ -162,6 +182,37 @@ public void salirJuego() {
     delay.setOnFinished(e -> System.exit(0));
     delay.play();
 }
+
+@FXML
+private void verRepeticion() {
+    if (ultimaRepeticion == null) {
+        mostrarMensaje("No hay repetición disponible");
+        return;
+    }
+
+    try {
+        // Carga la misma vista del juego normal
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/uisil/proyecto_juego_cartas/views/Main.fxml"));
+        Parent root = loader.load();
+        
+        // Obtiene el controlador del juego
+        MainController mainController = loader.getController();
+        
+        // Configura el tablero en modo repetición
+        mainController.iniciarModoRepeticion(ultimaRepeticion);
+        
+        // Muestra la escena
+        Stage stage = (Stage) btnRepeticiones.getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+        
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+
+
+
 @FXML
 public void initialize() {
     // Ruta al archivo de audio dentro de resources
@@ -179,6 +230,7 @@ public void initialize() {
     btnCerrar.setFont(new Font("Minecraft", 18));
     chkMusica.setFont(new Font("Minecraft", 18));
     chkMusica.setTextFill(Color.WHITE);
+    btnRepeticiones.setFont(new Font("Minecraft", 18));
     
     String ruta = getClass().getResource("/audio/SoundTrack_InicioMain.mp3").toExternalForm();
     Media media = new Media(ruta);

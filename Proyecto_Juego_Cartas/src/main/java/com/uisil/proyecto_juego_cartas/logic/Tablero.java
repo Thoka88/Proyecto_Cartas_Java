@@ -1,4 +1,5 @@
-/*
+
+    /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
@@ -15,6 +16,8 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.util.Duration;
+import javafx.animation.Timeline;
+import javafx.animation.KeyFrame;
 import com.uisil.proyecto_juego_cartas.controllers.MainController;
 
 import java.util.*;
@@ -38,6 +41,10 @@ public class Tablero {
     private int puntos =0;
     private MainController mainController;
     private Map<Carta, Button> cartaBotonMap = new HashMap<>();
+    private List<Movimiento> movimientosRealizados = new ArrayList<>();
+    private Repeticion ultimaRepeticion;
+    private Carta[][] estructuraCartas;
+    private int indiceActual = 0;
 
     public Tablero(Dificultad dificultad, Juego juego, MainController mainController) {
         this.dificultad = dificultad;
@@ -55,6 +62,9 @@ public class Tablero {
     public List<Carta> getCartas() {
         return cartas;
     }
+    public List<Movimiento> getMovimientosRealizados() {
+    return movimientosRealizados;
+}
 
     private List<Carta> generarCartas() {
         int totalCartas = dificultad.filas * dificultad.columnas;
@@ -106,34 +116,41 @@ public class Tablero {
     }
 
     private GridPane construirTablero() {
-        GridPane grid = new GridPane();
-        grid.setAlignment(Pos.CENTER);
-        grid.setHgap(1);
-        grid.setVgap(1);
+    GridPane grid = new GridPane();
+    grid.setAlignment(Pos.CENTER);
+    grid.setHgap(1);
+    grid.setVgap(1);
 
-        for (int i = 0; i < dificultad.columnas; i++) {
-            ColumnConstraints cc = new ColumnConstraints();
-            cc.setHgrow(Priority.ALWAYS);
-            grid.getColumnConstraints().add(cc);
-        }
-
-        for (int i = 0; i < dificultad.filas; i++) {
-            RowConstraints rc = new RowConstraints();
-            rc.setVgrow(Priority.ALWAYS);
-            grid.getRowConstraints().add(rc);
-        }
-
-        int index = 0;
-        for (int fila = 0; fila < dificultad.filas; fila++) {
-            for (int col = 0; col < dificultad.columnas; col++) {
-                Carta carta = cartas.get(index++);
-                StackPane celda = crearCeldaResponsive(carta);
-                grid.add(celda, col, fila);
-            }
-        }
-
-        return grid;
+    for (int i = 0; i < dificultad.columnas; i++) {
+        ColumnConstraints cc = new ColumnConstraints();
+        cc.setHgrow(Priority.ALWAYS);
+        grid.getColumnConstraints().add(cc);
     }
+
+    for (int i = 0; i < dificultad.filas; i++) {
+        RowConstraints rc = new RowConstraints();
+        rc.setVgrow(Priority.ALWAYS);
+        grid.getRowConstraints().add(rc);
+    }
+
+    // ✅ Inicializar estructuraCartas correctamente
+    estructuraCartas = new Carta[dificultad.filas][dificultad.columnas];
+
+    estructuraCartas = new Carta[dificultad.filas][dificultad.columnas]; // 👈 INICIALIZA
+
+    int index = 0;
+    for (int fila = 0; fila < dificultad.filas; fila++) {
+        for (int col = 0; col < dificultad.columnas; col++) {
+        Carta carta = cartas.get(index++);
+        carta.setPosicion(fila, col);
+        estructuraCartas[fila][col] = carta; // 👈 LLENA la estructura
+        StackPane celda = crearCeldaResponsive(carta);
+        grid.add(celda, col, fila);
+    }
+}
+
+    return grid;
+}
     public void reconstruirDesdeEstado(PartidaGuardada partida) {
     List<CartaEstado> estados = partida.getCartas();
     for (CartaEstado estado : estados) {
@@ -163,8 +180,56 @@ public class Tablero {
 
     mainController.actualizarPuntaje(puntos); // Asegúrate de mostrar puntos correctamente
 }
+    public void reconstruirDesdeRepeticion(Repeticion repeticion) {
+    this.movimientosRealizados = new ArrayList<>(repeticion.getMovimientos());
+    this.estructuraCartas = repeticion.getEstructuraFinal();
+    this.cartas = new ArrayList<>();
+    
+    // Reconstruir lista de cartas desde la estructura
+    for (int fila = 0; fila < dificultad.filas; fila++) {
+        for (int col = 0; col < dificultad.columnas; col++) {
+            cartas.add(estructuraCartas[fila][col]);
+        }
+    }
+    
+    // Reconstruir el tablero visual
+    cartaBotonMap.clear();
+    tablero.getChildren().clear();
+    
+    // Reconfigurar constraints del grid
+    tablero.getColumnConstraints().clear();
+    tablero.getRowConstraints().clear();
+    
+    for (int i = 0; i < dificultad.columnas; i++) {
+        ColumnConstraints cc = new ColumnConstraints();
+        cc.setHgrow(Priority.ALWAYS);
+        tablero.getColumnConstraints().add(cc);
+    }
+    
+    for (int i = 0; i < dificultad.filas; i++) {
+        RowConstraints rc = new RowConstraints();
+        rc.setVgrow(Priority.ALWAYS);
+        tablero.getRowConstraints().add(rc);
+    }
+    
+    // Añadir las celdas
+    for (int fila = 0; fila < dificultad.filas; fila++) {
+        for (int col = 0; col < dificultad.columnas; col++) {
+            Carta carta = estructuraCartas[fila][col];
+            StackPane celda = crearCeldaParaRepeticion(carta);
+            tablero.add(celda, col, fila);
+        }
+    }
+}
+ public void reproducirRepeticionVisual() {
+    if (movimientosRealizados == null || movimientosRealizados.isEmpty()) return;
+    cartasHabilitadas = false; // Deshabilita interacción durante la repetición
+    reproducirSiguienteMovimiento(); // Inicia desde el primer movimiento
+}
 
-    private StackPane crearCeldaResponsive(Carta carta) {
+
+
+    public StackPane crearCeldaResponsive(Carta carta) {
         StackPane contenedor = new StackPane();
 
         Image imagenCarta;
@@ -233,9 +298,16 @@ public class Tablero {
                 CartaPenalizacion penal = (CartaPenalizacion) c1;
                 penal.activarPenalizacion();
                 contadorPenalizaciones++;
-                //registrarEventoEnArchivo("PENALIZACIÓN", penal.getTipo().name());
                 mostrarMensajePenalizacion(penal.getTipo().name());
-}
+                }
+                //registrarEventoEnArchivo("PENALIZACIÓN", penal.getTipo().name());
+                
+                movimientosRealizados.add(new Movimiento(
+                movimientosRealizados.size() + 1,
+                c1.getFila(), c1.getColumna(),
+                c2.getFila(), c2.getColumna(),
+                true // si se emparejaron
+                        ));
 
                 cartasSeleccionadas.clear();
                 botonesSeleccionados.clear();
@@ -269,8 +341,106 @@ public class Tablero {
         StackPane.setMargin(boton, new Insets(5));
 
         return contenedor;
-        
+        }
+    
+   public StackPane crearCeldaParaRepeticion(Carta carta) {
+    StackPane contenedor = new StackPane();
+    contenedor.setAlignment(Pos.CENTER);
+    
+    // Obtener imágenes igual que en crearCeldaResponsive()
+    Image imagenCarta;
+    if (carta instanceof CartaBonus) {
+        imagenCarta = new Image(getClass().getResource("/com/uisil/proyecto_juego_cartas/img/Carta_Bonus.png").toExternalForm());
+    } else if (carta instanceof CartaPenalizacion) {
+        imagenCarta = new Image(getClass().getResource("/com/uisil/proyecto_juego_cartas/img/Carta_Penalizacion.png").toExternalForm());
+    } else {
+        imagenCarta = imagenesCartas.get(carta.getId());
     }
+    
+    String imagenReversoURL = imagenReverso.getUrl();
+    String imagenCartaURL = imagenCarta.getUrl();
+    
+    Button boton = new Button();
+    boton.setDisable(true); // Deshabilitado para interacción
+    boton.setPrefSize(180, 180);
+    boton.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+    
+    // Estado visual inicial
+    String imagenMostrar = carta.isBocaArriba() || carta.isColocada() ? imagenCartaURL : imagenReversoURL;
+    boton.setStyle("-fx-background-image: url('" + imagenMostrar + "'); " +
+                 "-fx-background-size: 80% 80%; " +
+                 "-fx-background-repeat: no-repeat; " +
+                 "-fx-background-position: center center; " +
+                 "-fx-border-color: black; " +
+                 "-fx-opacity: " + (carta.isColocada() ? "0.7" : "1.0") + ";");
+    
+    cartaBotonMap.put(carta, boton);
+    contenedor.getChildren().add(boton);
+    StackPane.setAlignment(boton, Pos.CENTER);
+    StackPane.setMargin(boton, new Insets(5));
+    
+    return contenedor;
+}
+    
+    public Dificultad getDificultad() {
+    return dificultad;
+}
+    public void iniciarRepeticionDesdePartida(List<Movimiento> movimientos) {
+    if (movimientos == null || movimientos.isEmpty()) return;
+
+    cartasHabilitadas = false;
+    this.movimientosRealizados = movimientos;
+
+    reproducirSiguienteMovimiento();
+}
+
+private void reproducirSiguienteMovimiento() {
+    if (indiceActual >= movimientosRealizados.size()) {
+        mostrarMensajeBonus("Repetición completada");
+        return;
+    }
+
+    Movimiento mov = movimientosRealizados.get(indiceActual);
+    Carta c1 = estructuraCartas[mov.getFila1()][mov.getCol1()];
+    Carta c2 = estructuraCartas[mov.getFila2()][mov.getCol2()];
+
+    // Voltear primera carta
+    c1.setBocaArriba(true);
+    voltearVisualmenteCarta(c1, true);
+
+    // Pausa antes de voltear segunda carta
+    PauseTransition pausaSegundaCarta = new PauseTransition(Duration.seconds(0.7));
+    pausaSegundaCarta.setOnFinished(e -> {
+        c2.setBocaArriba(true);
+        voltearVisualmenteCarta(c2, true);
+
+        // Pausa antes de manejar el resultado
+        PauseTransition pausaResultado = new PauseTransition(Duration.seconds(1.0));
+        pausaResultado.setOnFinished(ev -> {
+            if (mov.fueEmparejado()) {
+                // Si fue match, marcarlas como colocadas
+                c1.colocar();
+                c2.colocar();
+                voltearVisualmenteCarta(c1, true);
+                voltearVisualmenteCarta(c2, true);
+            } else {
+                // Si no fue match, voltearlas de nuevo
+                c1.setBocaArriba(false);
+                c2.setBocaArriba(false);
+                voltearVisualmenteCarta(c1, false);
+                voltearVisualmenteCarta(c2, false);
+            }
+
+            // Pasar al siguiente movimiento
+            indiceActual++;
+            PauseTransition pausaSiguiente = new PauseTransition(Duration.seconds(0.5));
+            pausaSiguiente.setOnFinished(event -> reproducirSiguienteMovimiento());
+            pausaSiguiente.play();
+        });
+        pausaResultado.play();
+    });
+    pausaSegundaCarta.play();
+}
     
 
     public MainController getMainController() {
@@ -385,7 +555,16 @@ public void mostrarParejaTemporal() {
     });
     pausa.play();
 }
+public Repeticion getUltimaRepeticion() {
+    return ultimaRepeticion;
+}
 
+public void setUltimaRepeticion(Repeticion rep) {
+    this.ultimaRepeticion = rep;
+}
+public Carta[][] getEstructuraCartas() {
+    return estructuraCartas;
+}
      
 
 public void mezclarCartasNoEmparejadasVisual(List<Carta> noEmparejadas) {
@@ -424,7 +603,7 @@ public void mezclarCartasNoEmparejadasVisual(List<Carta> noEmparejadas) {
         }
     }
 
-}
+}    
+    
 
-
-
+    
