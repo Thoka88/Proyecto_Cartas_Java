@@ -1,21 +1,16 @@
+
+
 .button {
-    -fx-font-family: 'Minecraft';
-    -fx-font-size: 18px;
-    -fx-background-color: linear-gradient(#888888, #444444);
-    -fx-border-color: black;
-    -fx-border-width: 2px;
-    -fx-text-fill: white;
-    -fx-effect: dropshadow(gaussian, black, 1, 1, 0, 1);
-    -fx-pref-width: 280px;
-    -fx-pref-height: 40px;
-}
+   
+    -fx-background-repeat: stretch;
+    -fx-background-size: cover;
+    -fx-background-position: center;
 
-@font-face {
-    font-family: 'MinecraftRegular';
-    src: url('fonts/MinecraftRegular.otf');
-}
+   
+   
 
-.label {
-    -fx-font-family: 'MinecraftRegular';
-    -fx-font-size: 30px;
+    -fx-border-color: white;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(one-pass-box, black, 3, 0, 2, 2);
+    -fx-padding: 8 16 8 16;
 }

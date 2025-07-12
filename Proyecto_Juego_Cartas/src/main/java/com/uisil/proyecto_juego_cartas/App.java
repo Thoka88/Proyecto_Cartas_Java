@@ -26,7 +26,7 @@ public class App extends Application {
         //javafx.scene.text.Font.loadFont(App.class.getResourceAsStream("/fonts/MinecraftRegular.oft"), 50);
 
         // Agregar hoja de estilo Minecraft
-        scene.getStylesheets().add(App.class.getResource("/estilos/Styles.css").toExternalForm());
+        scene.getStylesheets().add(App.class.getResource("/estilos/Inicio.css").toExternalForm());
         
         stage.setScene(scene);
         stage.setTitle("Pantalla de Inicio");

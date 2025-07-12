@@ -20,7 +20,7 @@
          </font></Label>
         <TextField fx:id="txtNombreJugador" maxWidth="300" promptText="Ingresa tu nombre" />
         
-        <Label fx:id="lblMensaje" style="-fx-font-size: 16px; -fx-text-fill: #e74c3c;" text="" visible="false" />
+        <Label fx:id="lblMensaje"  text="" visible="false" />
 
         <Label fx:id="lblDificultad" text="Seleccionar dificultad:">
          <font>

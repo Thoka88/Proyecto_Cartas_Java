@@ -46,6 +46,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import java.io.IOException;
 import java.util.Arrays;
+import javafx.scene.media.AudioClip;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 
 public class MainController {
@@ -62,7 +65,9 @@ public class MainController {
 
     @FXML
     private Label lblTiempo;
-
+    
+     @FXML
+    private Label lblAjuste;
 
     @FXML
     private Label lblMensaje;
@@ -74,6 +79,9 @@ public class MainController {
 
     @FXML
     private Button btnInicio;
+    
+    @FXML
+    private Button btnCargar;
     
     @FXML
     private Button btnGuardar;
@@ -93,8 +101,7 @@ public class MainController {
     @FXML 
     private BorderPane rootBorderPane;
     
-    @FXML
-    private Button btnSalir;
+    
     
 
     private Timeline temporizador;
@@ -185,6 +192,7 @@ public class MainController {
 }
     @FXML
 private void guardarPartidaJson() {
+    reproducirSonidoBoton();
     PartidaGuardada partida = new PartidaGuardada();
     partida.setNombreJugador(nombreJugador);
     partida.setTiempoRestante(tiempoRestante);
@@ -225,6 +233,7 @@ private void guardarPartidaJson() {
 }
     @FXML
 private void cargarPartidaJson() {
+    reproducirSonidoBoton();
     FileChooser chooser = new FileChooser();
     chooser.setTitle("Cargar partida");
     chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON", "*.json"));
@@ -267,16 +276,19 @@ private void cargarPartidaJson() {
 }
     @FXML
     private void mostrarPanelAjustes() {
+        reproducirSonidoBoton();
         panelAjustes.setVisible(true);
 }
 
     @FXML
     private void ocultarPanelAjustes() {
+        reproducirSonidoBoton();
         panelAjustes.setVisible(false);
 }
 
     @FXML
     private void pausarJuego() {
+        reproducirSonidoBoton();
         juegoPausado = true;
         temporizador.pause();
         tablero.setCartasHabilitadas(false);
@@ -286,6 +298,7 @@ private void cargarPartidaJson() {
 
     @FXML
     private void reanudarJuego() {
+        reproducirSonidoBoton();
         juegoPausado = false;
         temporizador.play();
         tablero.setCartasHabilitadas(true);
@@ -297,6 +310,7 @@ private void cargarPartidaJson() {
 
     @FXML
     private void guardarPartida() {
+        reproducirSonidoBoton();
     FileChooser fileChooser = new FileChooser();
     fileChooser.setTitle("Guardar partida");
     fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivo de texto", "*.txt"));
@@ -355,6 +369,22 @@ public VBox crearPanelAjustes() {
 @FXML
 public void initialize() {
     // Ruta al archivo de audio dentro de resources
+    Font minecraftFont = Font.loadFont(getClass().getResource("/fonts/MinecraftRegular.otf").toExternalForm(), 30);
+    lblJugador.setFont(new Font("Minecraft", 15));
+    lblTiempo.setFont(new Font("Minecraft", 15));
+    lblPuntaje.setFont(new Font("Minecraft", 15));
+    lblMensaje.setFont(new Font("Minecraft", 15));
+    btnAjustes.setFont(new Font("Minecraft", 15));
+    btnCargar.setFont(new Font("Minecraft", 15));
+    btnGuardar.setFont(new Font("Minecraft", 15));
+    btnInicio.setFont(new Font("Minecraft", 15));
+    btnPausar.setFont(new Font("Minecraft", 15));
+    btnReanudar.setFont(new Font("Minecraft", 15));
+    lblAjuste.setFont(minecraftFont); 
+    lblAjuste.setTextFill(Color.WHITE);
+    chkMusica.setFont(new Font("Minecraft", 18));
+    chkMusica.setTextFill(Color.WHITE);
+   
     String ruta = getClass().getResource("/audio/SoundTrack_Main.mp3").toExternalForm();
     Media media = new Media(ruta);
     mediaPlayer = new MediaPlayer(media);
@@ -379,17 +409,25 @@ public void initialize() {
 }
 @FXML
 public void salirJuego(){
+    reproducirSonidoBoton();
 System.exit(0);
 
 }
+private void reproducirSonidoBoton() {
+    String rutaSonido = getClass().getResource("/audio/sonido_click.mp3").toExternalForm();
+    AudioClip sonido = new AudioClip(rutaSonido);
+    sonido.play();
+}
 
     public void detenerMusica() {
+        reproducirSonidoBoton();
     if (mediaPlayer != null) {
         mediaPlayer.stop(); // Detiene y libera recursos
     }
     }
     @FXML
 private void volverAlInicio() {
+    reproducirSonidoBoton();
     // Detener temporizador y música
     if (temporizador != null) {
         temporizador.stop();
@@ -473,9 +511,7 @@ public void iniciarModoRepeticion(Repeticion repeticion) {
     btnGuardar.setDisable(true);
     
     // Botón para volver
-    Button btnVolver = new Button("Volver al Inicio");
-    btnVolver.setOnAction(e -> volverAlInicio());
-    contenedorJuego.getChildren().add(btnVolver);
+    
     
     // Carga y reproduce la repetición
     tablero.reconstruirDesdeRepeticion(repeticion);
