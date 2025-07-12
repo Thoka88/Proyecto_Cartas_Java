@@ -205,6 +205,7 @@ private void verRepeticion() {
         Stage stage = (Stage) btnRepeticiones.getScene().getWindow();
         stage.setScene(new Scene(root));
         stage.show();
+        detenerMusica();
         
     } catch (IOException e) {
         e.printStackTrace();
@@ -231,6 +232,7 @@ public void initialize() {
     chkMusica.setFont(new Font("Minecraft", 18));
     chkMusica.setTextFill(Color.WHITE);
     btnRepeticiones.setFont(new Font("Minecraft", 18));
+    txtNombreJugador.setFont(new Font("Minecraft", 18));
     
     String ruta = getClass().getResource("/audio/SoundTrack_InicioMain.mp3").toExternalForm();
     Media media = new Media(ruta);
