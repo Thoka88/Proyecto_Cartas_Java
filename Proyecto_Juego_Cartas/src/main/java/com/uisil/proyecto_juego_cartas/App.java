@@ -23,7 +23,14 @@ public class App extends Application {
 
         Scene scene = new Scene(root, 720, 680); // ✅ declarar la variable
             // Cargar fuente personalizada
-        //javafx.scene.text.Font.loadFont(App.class.getResourceAsStream("/fonts/MinecraftRegular.oft"), 50);
+        javafx.scene.text.Font font = javafx.scene.text.Font.loadFont(
+    App.class.getResourceAsStream("/fonts/MinecraftRegular.otf"), 50);
+
+if (font == null) {
+    System.err.println("❌ No se pudo cargar la fuente MinecraftRegular.otf");
+} else {
+    System.out.println("✅ Fuente cargada correctamente: " + font.getName());
+}
 
         // Agregar hoja de estilo Minecraft
         scene.getStylesheets().add(App.class.getResource("/estilos/Inicio.css").toExternalForm());
