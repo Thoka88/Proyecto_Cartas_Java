@@ -1,7 +1,6 @@
 
 
 .button {
-
    
     -fx-background-repeat: stretch;
     -fx-background-size: cover;
@@ -15,4 +14,3 @@
     -fx-effect: dropshadow(one-pass-box, black, 3, 0, 2, 2);
     -fx-padding: 8 16 8 16;
 }
-
